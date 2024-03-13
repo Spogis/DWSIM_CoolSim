@@ -15,3 +15,4 @@ ktr = 0               #L mol-1 s-1
 
 M = 5.82
 MWm=104.15
+Hours = 40
