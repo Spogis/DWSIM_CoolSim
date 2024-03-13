@@ -14,4 +14,4 @@ Contributors
 *
 
 
-(Include your name `here <https://github.com/Spogis/EasyKerasMLP/tree/master/AUTHORS.rst>`_. if your are actively contributing to the project in anyway)
+(Include your name `here <https://github.com/Spogis/ARGET_ATRP_MLP/blob/master/AUTHORS.rst>`_. if your are actively contributing to the project in anyway)
