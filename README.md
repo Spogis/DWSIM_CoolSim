@@ -10,14 +10,11 @@ The ARGET ATRP Dash app is a comprehensive tool designed to facilitate the under
 - *Parameter Optimization Tool:*  Experiment with different reactant concentrations, temperatures, and catalysts to find optimal conditions for your reactions. 
 - *Data Analysis:* Upload experimental data to compare with simulated results for validation and analysis.
 
----
 ## Development Team
 * Kauê Scaranari Alcantara <k175992@dac.unicamp.br> || UNICAMP
 * Profa. Dra. Liliane Maria Ferrareso Lona <lona@unicamp.br> || UNICAMP
 * Prof. Dr. Nicolas Spogis <nicolas.spogis@gmail.com> || UNICAMP || <https://linktr.ee/spogis>
 
-
----
 ## Installation
 
 To install the necessary dependencies, you need to have Python installed on your system. If you don't have Python, you can download it [here](https://www.python.org/downloads/). After installing Python, follow the steps below:
@@ -31,7 +28,6 @@ To install the necessary dependencies, you need to have Python installed on your
    Within the project directory, locate the `requirements.txt` file containing all necessary libraries. Install them by running: `pip install -r requirements.txt` 
 This will install all dependencies required to run Easy DOE.
 
----
 ## Execution
 
 To run the application, follow these steps:
@@ -42,14 +38,11 @@ To run the application, follow these steps:
 
 * After running the command, Dash will start the local server and you can access the application through your browser. Normally, the URL will be something like `http://127.0.0.5:8080/`.
 
----
 ## Support
 
 If you encounter any problems or have any questions, do not hesitate to open an issue in the GitHub repository or contact us directly.
 
----
 ##  License
 This project is licensed under the Apache License - see the LICENSE.md file for details.
 
----
 ## Contact: https://linktr.ee/CascaGrossaSuprema
