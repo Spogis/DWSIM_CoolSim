@@ -13,7 +13,6 @@ import base64
 import io
 
 from doe.DOE import *
-from doe.DataAnalysis import *
 from assets.DataAnalytics import *
 from assets.odes import *
 
@@ -21,6 +20,7 @@ from layouts.Layout_DOE import *
 from layouts.layout_parallel_chart import *
 from layouts.layout_report import *
 from layouts.layout_simulate import *
+from layouts.layout_about import *
 
 with open('assets/status.txt', 'w') as file:
     file.write(str(0.0))
@@ -32,7 +32,7 @@ app.title = "ARGET ATRP"
 
 server = app.server
 
-initial_df_data = pd.read_excel('datasets/ARGET_ATRP_Input.xlsx')
+initial_df_data = pd.read_excel('datasets/ARGET_ATRP_Input.xlsx', sheet_name='DOE')
 
 app.layout = html.Div([
     html.Br(),
@@ -50,6 +50,7 @@ app.layout = html.Div([
             dcc.Tab(label='MLP Setup', value='MLP_Setup'),
             dcc.Tab(label='MLP Training', value='MLP_Training'),
             dcc.Tab(label='MLP Evaluation', value='MLP_Evaluation'),
+            dcc.Tab(label='About', value='About'),
         ], style={'align': 'center', 'width': '100%', 'margin-left': 'auto', 'margin-right': 'auto'}),
     ]),
     dcc.Store(id='store-data'),
@@ -74,6 +75,8 @@ def update_tab_content(selected_tab):
         return ""
     elif selected_tab == 'MLP_Evaluation':
         return ""
+    elif selected_tab == 'About':
+        return layout_about()
 
 @app.callback(Output('table', 'style_data_conditional', allow_duplicate=True),
               Input('table', 'data'),
@@ -97,12 +100,18 @@ def update_editability(rows):
               [State('table', 'data'),
                State('numero_de_simulacoes', 'value')],
               prevent_initial_call=True)
-def create_doe(n_clicks, rows, numero_de_simulacoes):
+def create_doe(n_clicks, rows, num_simulacoes):
     df_to_save = pd.DataFrame(rows)
-    filepath = 'datasets/DOE_Input.xlsx'
-    df_to_save.to_excel(filepath, index=False)
+    filepath = 'datasets/ARGET_ATRP_Input.xlsx'
 
-    NumberOfSimulations = numero_de_simulacoes
+    with pd.ExcelWriter(filepath, engine='xlsxwriter') as writer:
+        df_to_save.to_excel(writer, sheet_name='DOE', index=False)
+
+        # Salvando o número de simulações em outra aba
+        df_infos = pd.DataFrame({'Number of Simulations': [num_simulacoes]})
+        df_infos.to_excel(writer, sheet_name='infos', index=False)
+
+    NumberOfSimulations = num_simulacoes
     Run_DOE(filepath, NumberOfSimulations)
 
     return 'DOE Table Generated Successfully!'
@@ -204,6 +213,32 @@ def update_progress(n_clicks, n):
     progress = min(progress_value % 110, 100)
     # only add text after 20% progress to ensure text isn't squashed too much
     return progress, f"{progress} %" if progress >= 20 else ""
+
+
+@app.callback(
+    Output('save-doe-btn', 'children'),
+    [Input('save-doe-btn', 'n_clicks')],
+    [State('table', 'data'),
+     State('numero_de_simulacoes', 'value')],
+    prevent_initial_call=True)
+def save_excel(n_clicks, rows, num_simulacoes):
+    if n_clicks > 0:
+        # Criando DataFrame dos dados da tabela
+        df_to_save = pd.DataFrame(rows)
+
+        # Caminho do arquivo onde o Excel será salvo
+        filepath = 'datasets/ARGET_ATRP_Input.xlsx'
+
+        # Usando ExcelWriter para salvar em abas diferentes
+        with pd.ExcelWriter(filepath, engine='xlsxwriter') as writer:
+            df_to_save.to_excel(writer, sheet_name='DOE', index=False)  # Salvando dados da tabela na aba 'DOE'
+
+            # Salvando o número de simulações em outra aba
+            df_infos = pd.DataFrame({'Number of Simulations': [num_simulacoes]})
+            df_infos.to_excel(writer, sheet_name='infos', index=False)  # Salvando na aba 'infos'
+
+        return 'DOE Configuration Saved!'
+    return 'Save DOE Configuration!'
 
 
 if __name__ == '__main__':

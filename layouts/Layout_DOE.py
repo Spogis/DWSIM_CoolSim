@@ -4,7 +4,7 @@ import pandas as pd
 from dash.dash_table.Format import Format, Scheme
 import dash_bootstrap_components as dbc
 
-initial_df_data = pd.read_excel('datasets/ARGET_ATRP_Input.xlsx')
+
 
 # Inicializa os dados da tabela com as novas colunas e uma linha de exemplo
 df = pd.DataFrame({
@@ -24,6 +24,10 @@ trust_level_values = ['0.9', '0.95', '0.99']
 
 
 def layout_DOE():
+    initial_df_data = pd.read_excel('datasets/ARGET_ATRP_Input.xlsx', sheet_name='DOE')
+    simulation_cases = pd.read_excel('datasets/ARGET_ATRP_Input.xlsx', sheet_name='infos')
+    cases = simulation_cases['Number of Simulations'].max()
+
     layout = html.Div([
         html.Br(),
         dash_table.DataTable(
@@ -81,10 +85,13 @@ def layout_DOE():
 
         html.Div([
             html.Br(),
+            html.Button('Save DOE Configuration!', id='save-doe-btn', n_clicks=0,
+                        style={'width': '400px', 'backgroundColor': 'green', 'color': 'white',
+                               'fontWeight': 'bold', 'fontSize': '20px', 'marginRight': '50px'}),
 
             html.Button('Create DOE', id='create-doe-btn', n_clicks=0,
                         style={'width': '400px', 'backgroundColor': 'green', 'color': 'white',
-                               'fontWeight': 'bold', 'fontSize': '20px', 'margin': 'auto'}),
+                               'fontWeight': 'bold', 'fontSize': '20px'}),
 
         ], style={'display': 'flex', 'justifyContent': 'center', 'alignItems': 'center', 'marginBottom': '10px'}),
 
@@ -94,7 +101,7 @@ def layout_DOE():
             dcc.Input(
                 id="numero_de_simulacoes",
                 type='number',
-                value=1000,
+                value=cases,
                 disabled=False,
                 step=1,
                 style={'width': '150px', 'textAlign': 'center', 'fontWeight': 'bold'}

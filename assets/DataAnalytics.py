@@ -20,7 +20,12 @@ def data_analytics(df):
         },
         progress_bar=True,
         correlations={
-            "auto": {"calculate": True},
+            "pearson": {"calculate": True},   # Correlação de Pearson para variáveis contínuas
+            "spearman": {"calculate": True},  # Correlação de Spearman para variáveis ordinais
+            "kendall": {"calculate": True},   # Correlação de Kendall para uma medida não paramétrica
+            "phi_k": {"calculate": True},     # Correlação Phik para variáveis categóricas e mistas
+            "cramers": {"calculate": True},   # Correlação de Cramér para variáveis categóricas
+            "auto": {"calculate": False}      # Desativa o cálculo automático para evitar duplicatas
         },
         explorative=True,
         interactions={"continuous": True},
