@@ -34,7 +34,7 @@ To run the application, follow these steps:
 
 * Navigate to the project directory where `main.py` is located.
 
-* Execute the `main.py` file using Python: **python main.py**
+* Execute the `main.py` file using Python: `python main.py`
 
 * After running the command, Dash will start the local server and you can access the application through your browser. Normally, the URL will be something like `http://127.0.0.5:8080/`.
 
