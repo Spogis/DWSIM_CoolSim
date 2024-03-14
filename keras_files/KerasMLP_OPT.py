@@ -61,7 +61,7 @@ def model_builder(hp, input_neurons=1, output_neurons=1):
                   loss='mse',
                   metrics=['mae'])
 
-    return model
+    return model, hp_batch_size
 
 
 def RunOptimizedMLP(Dataset, Input_Columns, Output_Columns):
@@ -119,13 +119,15 @@ def RunOptimizedMLP(Dataset, Input_Columns, Output_Columns):
 
     stop_early = keras.callbacks.EarlyStopping(
         monitor='loss',
-        patience=10,
+        patience=50,
         min_delta=0.001,
         restore_best_weights=True,
     )
 
     # Inicia a busca
-    tuner.search(X_train, y_train, epochs=500, validation_data=(X_valid, y_valid), callbacks=[stop_early])
+    tuner.search(X_train, y_train, epochs=500,
+                 validation_data=(X_valid, y_valid), callbacks=[stop_early],
+                 batch_size=512)
 
     # Obtém o melhor modelo
     best_model = tuner.get_best_models(num_models=1)[0]

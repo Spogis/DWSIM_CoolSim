@@ -12,16 +12,16 @@ def layout_fast_mlp():
                         id='run-MLP-button',
                         disabled=False,
                         style={'width': '400px', 'backgroundColor': 'green', 'color': 'white',
-                               'fontWeight': 'bold', 'fontSize': '20px', 'marginRight': '50px'}),
+                               'fontWeight': 'bold', 'fontSize': '20px'}),
         ], style={'display': 'flex', 'flex-direction': 'column', 'alignItems': 'center', 'justifyContent': 'center',
                   'marginBottom': '10px'}),
-
         html.Br(),
         dbc.Spinner(html.Div(id="loading-output1"), spinner_style={"width": "3rem", "height": "3rem"}),
+
         html.H2("r² score:"),
         dcc.Textarea(
             id='r2-simple-mlp-textarea',
-            style={'width': '100%', 'height': 200, 'resize': 'none', 'fontWeight': 'bold'},
+            style={'width': '100%', 'height': '100px', 'resize': 'none', 'fontWeight': 'bold'},
             readOnly=True
         ),
         html.Br(),

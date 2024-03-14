@@ -97,7 +97,7 @@ def RunMLP(Dataset, Input_Columns, Output_Columns):
 
     early_stopping = keras.callbacks.EarlyStopping(
         monitor='loss',
-        patience=10,
+        patience=50,
         min_delta=0.001,
         restore_best_weights=True,
     )
@@ -105,8 +105,8 @@ def RunMLP(Dataset, Input_Columns, Output_Columns):
     history = model.fit(
         X_train, y_train,
         validation_data=(X_valid, y_valid),
-        batch_size=100,
-        epochs=1000,
+        batch_size=512,
+        epochs=2000,
         callbacks=[early_stopping],
         verbose=1,
     )
@@ -174,6 +174,7 @@ def RunMLP(Dataset, Input_Columns, Output_Columns):
     # Adicione rótulos e título ao gráfico
     plt.xlabel('Epoch')
     plt.ylabel('Loss')
+    plt.yscale('log')
     plt.title('Loss vs. Validation Loss')
     plt.legend(['Training Loss', 'Validation Loss'])
     plt.savefig('assets/images/00 - LossEpoch.png')

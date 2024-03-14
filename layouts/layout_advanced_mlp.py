@@ -12,7 +12,7 @@ def layout_advanced_mlp():
                         id='run-OPTMLP-button',
                         disabled=False,
                         style={'width': '400px', 'backgroundColor': 'green', 'color': 'white',
-                               'fontWeight': 'bold', 'fontSize': '20px', 'marginRight': '50px'}),
+                               'fontWeight': 'bold', 'fontSize': '20px'}),
         ], style={'display': 'flex', 'flex-direction': 'column', 'alignItems': 'center', 'justifyContent': 'center',
                   'marginBottom': '10px'}),
         html.Br(),
