@@ -61,7 +61,7 @@ def model_builder(hp, input_neurons=1, output_neurons=1):
                   loss='mse',
                   metrics=['mae'])
 
-    return model, hp_batch_size
+    return model
 
 
 def RunOptimizedMLP(Dataset, Input_Columns, Output_Columns):
@@ -133,7 +133,12 @@ def RunOptimizedMLP(Dataset, Input_Columns, Output_Columns):
     best_model = tuner.get_best_models(num_models=1)[0]
 
     # Treinamos o melhor modelo manualmente
-    history = best_model.fit(X_train, y_train, epochs=500, validation_data=(X_valid, y_valid), callbacks=[stop_early])
+    history = best_model.fit(X_train, y_train,
+                             validation_data=(X_valid, y_valid),
+                             batch_size=512,
+                             epochs=2000,
+                             callbacks=[stop_early],
+                             verbose=1)
 
     # Obtém o melhor conjunto de hiperparâmetros
     best_hps = tuner.get_best_hyperparameters(num_trials=1)[0]
