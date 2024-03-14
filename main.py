@@ -1,16 +1,5 @@
-import dash
-from dash.dependencies import Input, Output, State
-from dash import dcc, html, Input, Output, State, ctx, dash_table, Patch
-import dash_bootstrap_components as dbc
-import pandas as pd
-import numpy as np
-import math
-import io
-from scipy.integrate import solve_ivp
+import re
 from datetime import datetime
-from dash.dash_table.Format import Format, Scheme
-import base64
-import io
 
 from doe.DOE import *
 from assets.DataAnalytics import *
@@ -21,9 +10,19 @@ from layouts.layout_parallel_chart import *
 from layouts.layout_report import *
 from layouts.layout_simulate import *
 from layouts.layout_about import *
+from layouts.layout_mlp_setup import *
+from layouts.layout_fast_mlp import *
+from layouts.layout_advanced_mlp import *
+from layouts.layout_mlp_evaluation import *
+
+from keras_files.KerasMLP import *
+from keras_files.KerasPredict import *
+from keras_files.KerasMLP_OPT import *
 
 with open('assets/status.txt', 'w') as file:
     file.write(str(0.0))
+
+input_columns, output_columns, drop_options = initial_columns()
 
 # Inicializa o app Dash
 app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
@@ -48,7 +47,8 @@ app.layout = html.Div([
             dcc.Tab(label='Exploratory Data Analysis', value='Data_Analytics'),
             dcc.Tab(label='Parallel Chart', value='Parallel_Chart'),
             dcc.Tab(label='MLP Setup', value='MLP_Setup'),
-            dcc.Tab(label='MLP Training', value='MLP_Training'),
+            dcc.Tab(label='Fast MLP Training', value='Fast_MLP_Training'),
+            dcc.Tab(label='Advanced MLP Training', value='Advanced_MLP_Training'),
             dcc.Tab(label='MLP Evaluation', value='MLP_Evaluation'),
             dcc.Tab(label='About', value='About'),
         ], style={'align': 'center', 'width': '100%', 'margin-left': 'auto', 'margin-right': 'auto'}),
@@ -70,11 +70,13 @@ def update_tab_content(selected_tab):
     elif selected_tab == 'Parallel_Chart':
         return parallel_chart()
     elif selected_tab == 'MLP_Setup':
-        return ""
-    elif selected_tab == 'MLP_Training':
-        return ""
+        return layout_mlp_setup(input_columns, output_columns, drop_options)
+    elif selected_tab == 'Fast_MLP_Training':
+        return layout_fast_mlp()
+    elif selected_tab == 'Advanced_MLP_Training':
+        return layout_advanced_mlp()
     elif selected_tab == 'MLP_Evaluation':
-        return ""
+        return layout_mlp_evaluation(input_columns)
     elif selected_tab == 'About':
         return layout_about()
 
@@ -240,6 +242,110 @@ def save_excel(n_clicks, rows, num_simulacoes):
         return 'DOE Configuration Saved!'
     return 'Save DOE Configuration!'
 
+
+@app.callback(Output('column-input-selector', 'value'),
+              Input('column-input-selector', 'value'))
+def update_table(selected_columns):
+    global input_columns
+    input_columns = selected_columns
+    return selected_columns
+
+
+@app.callback(Output('column-output-selector', 'value'),
+              Input('column-output-selector', 'value'))
+def update_table(selected_columns):
+    global output_columns
+    output_columns = selected_columns
+    return selected_columns
+
+
+@app.callback([Output("loading-output1", "children", allow_duplicate=True),
+               Output("button-output", "children", allow_duplicate=True),
+               Output('r2-simple-mlp-textarea', 'value')],
+              Input("run-MLP-button", "n_clicks"),
+              prevent_initial_call=True)
+def MLP(n_clicks):
+    global input_columns, output_columns
+    dataset = pd.read_excel('datasets/ARGET_ATRP_ODEs_Dataset.xlsx')
+    if 'index' in dataset.columns:
+        dataset = dataset.drop(columns=['index'])
+
+    r2_str = RunMLP(dataset, input_columns, output_columns)
+
+    # Caminho do diretório contendo as imagens
+    directory_path = 'assets/images'
+
+    # Lista para armazenar os componentes de imagem
+    image_components = []
+
+    # Lista de extensões de arquivo para considerar como imagens
+    image_extensions = ['.jpg', '.jpeg', '.png', '.gif']
+
+    # Itera sobre todos os arquivos no diretório
+    for filename in os.listdir(directory_path):
+        # Verifica se o arquivo é uma imagem
+        if any(filename.lower().endswith(ext) for ext in image_extensions):
+            # Cria o caminho completo do arquivo
+            file_path = os.path.join(directory_path, filename)
+            # Cria um componente de imagem e adiciona à lista
+            image_components.append(html.Img(src=file_path, style={'width': '50%', 'height': 'auto'}))
+
+    loading_status = ""
+    return loading_status, image_components, r2_str
+
+@app.callback(Output('output-text', 'value'),
+              Input('predict-button', 'n_clicks'),
+              State('input-text', 'value'))
+def update_output(n_clicks, input_value):
+    try:
+        input_list = re.split(r'\s*[,\s;]\s*', input_value)
+        input_data = np.array([list(map(float, input_list))])
+        ypred = PredictValues(input_data)
+
+        predicted_str = ""
+        for i in range(len(ypred)):
+            valor_formatado = f"{ypred[i]:.3e}"
+            predicted_str += f"{output_columns[i]}:  {valor_formatado}\n"
+
+    except Exception as e:
+        predicted_str = ""
+    return predicted_str
+
+@app.callback([Output("loading-output2", "children", allow_duplicate=True),
+               Output("button-output-advanced", "children", allow_duplicate=True),
+               Output('best-hps-textarea', 'value'),
+               Output('model-summary-textarea', 'value'),
+               Output('r2-opt-mlp-textarea', 'value')],
+              Input("run-OPTMLP-button", "n_clicks"),
+              prevent_initial_call=True)
+def OPTMLP(n_clicks):
+    global input_columns, output_columns
+    dataset = pd.read_excel('datasets/ARGET_ATRP_ODEs_Dataset.xlsx')
+    if 'index' in dataset.columns:
+        dataset = dataset.drop(columns=['index'])
+
+    best_hps_str, model_summary_str, r2_str  = RunOptimizedMLP(dataset, input_columns, output_columns)
+
+    # Caminho do diretório contendo as imagens
+    directory_path = 'assets/images'
+
+    # Lista para armazenar os componentes de imagem
+    image_components = []
+
+    # Lista de extensões de arquivo para considerar como imagens
+    image_extensions = ['.jpg', '.jpeg', '.png', '.gif']
+
+    # Itera sobre todos os arquivos no diretório
+    for filename in os.listdir(directory_path):
+        # Verifica se o arquivo é uma imagem
+        if any(filename.lower().endswith(ext) for ext in image_extensions):
+            # Cria o caminho completo do arquivo
+            file_path = os.path.join(directory_path, filename)
+            # Cria um componente de imagem e adiciona à lista
+            image_components.append(html.Img(src=file_path, style={'width': '50%', 'height': 'auto'}))
+
+    loading_status = ""
+    return loading_status, image_components, best_hps_str, model_summary_str, r2_str
 
 if __name__ == '__main__':
     app.run_server(host='127.0.0.5', port=8080, debug=False)
