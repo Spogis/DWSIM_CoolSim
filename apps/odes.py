@@ -3,7 +3,7 @@ import numpy as np
 import io
 from scipy.integrate import solve_ivp
 
-from assets.ReactionConstants import *
+from apps.ReactionConstants import *
 
 
 def ARGET_ODES(t, y):
@@ -172,9 +172,5 @@ def SimulateODEs():
             with open('assets/status.txt', 'w') as file:
                 file.write(str(status))
 
-    exportfile = 'datasets/ARGET_ATRP_ODEs_Dataset.xlsx'
+    exportfile = 'datasets/ODEs_Dataset.xlsx'
     exportdataset.to_excel(exportfile, index=False)
-
-
-    
-    

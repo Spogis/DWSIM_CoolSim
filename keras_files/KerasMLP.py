@@ -124,14 +124,14 @@ def RunMLP(Dataset, Input_Columns, Output_Columns):
         valor_formatado = f"{valor_r2:.4f}"
         r2_str += f"r² {Output_Columns[i]}:  {valor_formatado}\n"
 
-    model.save('assets/Keras_MLP_Surrogate.keras')
+    model.save('kerasoutput/Keras_MLP_Surrogate.keras')
 
     # Salva o scaler dos dados de entrada
-    with open('assets/scalerX.pkl', 'wb') as file:
+    with open('kerasoutput/scalerX.pkl', 'wb') as file:
         pickle.dump(scalerX, file)
 
     # Salva o scaler dos dados de saída
-    with open('assets/scalerY.pkl', 'wb') as file:
+    with open('kerasoutput/scalerY.pkl', 'wb') as file:
         pickle.dump(scalerY, file)
 
     # Define o caminho do diretório

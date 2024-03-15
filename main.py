@@ -2,8 +2,8 @@ import re
 from datetime import datetime
 
 from doe.DOE import *
-from assets.DataAnalytics import *
-from assets.odes import *
+from apps.DataAnalytics import *
+from apps.odes import *
 
 from layouts.Layout_DOE import *
 from layouts.layout_parallel_chart import *
@@ -31,7 +31,7 @@ app.title = "ARGET ATRP"
 
 server = app.server
 
-initial_df_data = pd.read_excel('datasets/ARGET_ATRP_Input.xlsx', sheet_name='DOE')
+initial_df_data = pd.read_excel('datasets/DOE_Setup.xlsx', sheet_name='DOE')
 
 app.layout = html.Div([
     html.Br(),
@@ -104,7 +104,7 @@ def update_editability(rows):
               prevent_initial_call=True)
 def create_doe(n_clicks, rows, num_simulacoes):
     df_to_save = pd.DataFrame(rows)
-    filepath = 'datasets/ARGET_ATRP_Input.xlsx'
+    filepath = 'datasets/DOE_Setup.xlsx'
 
     with pd.ExcelWriter(filepath, engine='xlsxwriter') as writer:
         df_to_save.to_excel(writer, sheet_name='DOE', index=False)
@@ -123,7 +123,7 @@ def create_doe(n_clicks, rows, num_simulacoes):
     Input("activefilters", "data")
 )
 def udpate_table(data):
-    df_ODES_Dataset = pd.read_excel('datasets/ARGET_ATRP_ODEs_Dataset.xlsx')
+    df_ODES_Dataset = pd.read_excel('datasets/ODEs_Dataset.xlsx')
     if 'index' in df_ODES_Dataset.columns:
         df_ODES_Dataset = df_ODES_Dataset.drop(columns=['index'])
 
@@ -153,7 +153,7 @@ def udpate_table(data):
     Input("graph-parcoords", "restyleData")
 )
 def updateFilters(data):
-    df_ODES_Dataset = pd.read_excel('datasets/ARGET_ATRP_ODEs_Dataset.xlsx')
+    df_ODES_Dataset = pd.read_excel('datasets/ODEs_Dataset.xlsx')
     if 'index' in df_ODES_Dataset.columns:
         df_ODES_Dataset = df_ODES_Dataset.drop(columns=['index'])
 
@@ -173,7 +173,7 @@ def updateFilters(data):
               Input('create-report-btn', 'n_clicks'),
               prevent_initial_call=True)
 def update_output(n_clicks):
-    df_ODES_Dataset = pd.read_excel('datasets/ARGET_ATRP_ODEs_Dataset.xlsx')
+    df_ODES_Dataset = pd.read_excel('datasets/ODEs_Dataset.xlsx')
     if 'index' in df_ODES_Dataset.columns:
         df_ODES_Dataset = df_ODES_Dataset.drop(columns=['index'])
 
@@ -229,7 +229,7 @@ def save_excel(n_clicks, rows, num_simulacoes):
         df_to_save = pd.DataFrame(rows)
 
         # Caminho do arquivo onde o Excel será salvo
-        filepath = 'datasets/ARGET_ATRP_Input.xlsx'
+        filepath = 'datasets/DOE_Setup.xlsx'
 
         # Usando ExcelWriter para salvar em abas diferentes
         with pd.ExcelWriter(filepath, engine='xlsxwriter') as writer:
@@ -266,7 +266,7 @@ def update_table(selected_columns):
               prevent_initial_call=True)
 def MLP(n_clicks):
     global input_columns, output_columns
-    dataset = pd.read_excel('datasets/ARGET_ATRP_ODEs_Dataset.xlsx')
+    dataset = pd.read_excel('datasets/ODEs_Dataset.xlsx')
     if 'index' in dataset.columns:
         dataset = dataset.drop(columns=['index'])
 
@@ -320,7 +320,7 @@ def update_output(n_clicks, input_value):
               prevent_initial_call=True)
 def OPTMLP(n_clicks):
     global input_columns, output_columns
-    dataset = pd.read_excel('datasets/ARGET_ATRP_ODEs_Dataset.xlsx')
+    dataset = pd.read_excel('datasets/ODEs_Dataset.xlsx')
     if 'index' in dataset.columns:
         dataset = dataset.drop(columns=['index'])
 

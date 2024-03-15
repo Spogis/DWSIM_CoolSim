@@ -2,7 +2,7 @@ import dash
 from dash import html, dcc, dash_table
 import base64
 
-pdf_about_path = 'assets/ARGET ATRP.pdf'
+pdf_about_path = 'assets/about.pdf'
 
 def encode_pdf_to_base64(pdf_path):
     with open(pdf_path, "rb") as pdf_file:

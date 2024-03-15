@@ -24,8 +24,8 @@ trust_level_values = ['0.9', '0.95', '0.99']
 
 
 def layout_DOE():
-    initial_df_data = pd.read_excel('datasets/ARGET_ATRP_Input.xlsx', sheet_name='DOE')
-    simulation_cases = pd.read_excel('datasets/ARGET_ATRP_Input.xlsx', sheet_name='infos')
+    initial_df_data = pd.read_excel('datasets/DOE_Setup.xlsx', sheet_name='DOE')
+    simulation_cases = pd.read_excel('datasets/DOE_Setup.xlsx', sheet_name='infos')
     cases = simulation_cases['Number of Simulations'].max()
 
     layout = html.Div([

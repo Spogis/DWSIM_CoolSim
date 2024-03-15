@@ -65,7 +65,7 @@ def model_builder(hp, input_neurons=1, output_neurons=1):
 
 
 def RunOptimizedMLP(Dataset, Input_Columns, Output_Columns):
-    limpar_KerasOutput('KerasOutput')
+    limpar_KerasOutput('kerasoutput')
     Input_Plus_Output = Input_Columns + Output_Columns
     Filtered_Dataset = Dataset[Input_Plus_Output]
 
@@ -114,7 +114,7 @@ def RunOptimizedMLP(Dataset, Input_Columns, Output_Columns):
                          max_epochs=5000,
                          factor=3,
                          seed=42,
-                         directory='KerasOutput',
+                         directory='kerasoutput',
                          project_name='Hyperband_Tuner')
 
     stop_early = keras.callbacks.EarlyStopping(

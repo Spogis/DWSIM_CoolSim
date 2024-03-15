@@ -6,7 +6,7 @@ import dash_bootstrap_components as dbc
 
 
 def initial_columns():
-    df_drop_values = pd.read_excel('datasets/ARGET_ATRP_ODEs_Dataset.xlsx')
+    df_drop_values = pd.read_excel('datasets/ODEs_Dataset.xlsx')
     if 'index' in df_drop_values.columns:
         df_drop_values = df_drop_values.drop(columns=['index'])
 

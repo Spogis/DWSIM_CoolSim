@@ -1,6 +1,7 @@
 import numpy as np
 import pandas as pd
 
+
 def CleanDataset(df):
     column_names = list(df)
 
@@ -26,6 +27,6 @@ def CleanDataset(df):
 
     df = df.dropna(axis=0)
 
-    df.to_excel("assets/Dataset_No_Outliers.xlsx")
+    df.to_excel("datasets/Dataset_No_Outliers.xlsx")
 
     return df

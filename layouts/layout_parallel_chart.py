@@ -6,7 +6,7 @@ import plotly.graph_objs as go
 import plotly.express as px
 
 def update_graph_parcoords():
-    df_ODES_Dataset = pd.read_excel('datasets/ARGET_ATRP_ODEs_Dataset.xlsx')
+    df_ODES_Dataset = pd.read_excel('datasets/ODEs_Dataset.xlsx')
     if 'index' in df_ODES_Dataset.columns:
         df_ODES_Dataset = df_ODES_Dataset.drop(columns=['index'])
 
@@ -15,7 +15,7 @@ def update_graph_parcoords():
 
 
 def parallel_chart():
-    df = pd.read_excel('datasets/ARGET_ATRP_ODEs_Dataset.xlsx')
+    df = pd.read_excel('datasets/ODEs_Dataset.xlsx')
     if 'index' in df.columns:
         df = df.drop(columns=['index'])
     fig = update_graph_parcoords()
