@@ -4,14 +4,14 @@ import numpy as np
 
 def PredictValues(input_data):
     # Carrega o modelo
-    model = load_model('assets/Keras_MLP_Surrogate.keras')
+    model = load_model('kerasoutput/Keras_MLP_Surrogate.keras')
 
     # Carrega o scaler dos dados de entrada
-    with open('assets/scalerX.pkl', 'rb') as file:
+    with open('kerasoutput/scalerX.pkl', 'rb') as file:
         scalerX = pickle.load(file)
 
     # Carrega o scaler dos dados de saída
-    with open('assets/scalerY.pkl', 'rb') as file:
+    with open('kerasoutput/scalerY.pkl', 'rb') as file:
         scalerY = pickle.load(file)
 
     # Regression Report
