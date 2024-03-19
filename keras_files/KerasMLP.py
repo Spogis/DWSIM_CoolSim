@@ -42,11 +42,8 @@ def Create_Keras_Model(in_features, out_features, n_camadas_ocultas):
 
     opt = keras.optimizers.Adam(learning_rate=0.001)
 
-    loss_weights = np.ones(out_features)
-
     model.compile(optimizer=opt, loss='mean_squared_error',
-                  metrics=['mae'],
-                  loss_weights=loss_weights)
+                  metrics=['mae'])
 
     model.summary()
 
