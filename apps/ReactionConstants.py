@@ -12,7 +12,3 @@ ktc = 0.99*kt         #L mol-1 s-1
 ktd = 0.01*kt         #L mol-1 s-1
 
 ktr = 0               #L mol-1 s-1
-
-M = 5.82
-MWm = 104.15
-Hours = 40

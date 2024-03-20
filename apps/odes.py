@@ -87,9 +87,9 @@ def ARGET_ODES(t, y):
             dAdt, dAXdt]
 
 
-def SolveODEs(initial_conditions):
+def SolveODEs(initial_conditions, reation_time):
     global t, y
-    total_time = 40*3600
+    total_time = reation_time*3600
     t_eval = np.linspace(0, total_time, num=int(total_time*10), endpoint=True)
 
     sol = solve_ivp(ARGET_ODES,
@@ -102,7 +102,7 @@ def SolveODEs(initial_conditions):
 
 
 
-def MoreUsableDataset():
+def MoreUsableDataset(MWm):
     global t, y
 
     df_time = pd.DataFrame({'Time':t})
@@ -129,7 +129,7 @@ def MoreUsableDataset():
     return results
 
 
-def SimulateODEs():
+def SimulateODEs(reation_time, MWm, M):
     df = pd.read_excel('datasets/DOE_LHC.xlsx')
     numberofsimulations = len(df)
 
@@ -157,8 +157,8 @@ def SimulateODEs():
                               C, 0,
                               A, 0]
 
-        SolveODEs(Initial_Conditions)
-        results = MoreUsableDataset()
+        SolveODEs(Initial_Conditions, reation_time)
+        results = MoreUsableDataset(MWm)
 
         designdata = np.array([POX / C, C / A, POX / M,
                                results['X'].iloc[-1],

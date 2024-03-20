@@ -1,9 +1,11 @@
 import re
+import time
 from datetime import datetime
 
 from doe.DOE import *
 from apps.DataAnalytics import *
 from apps.odes import *
+from apps.optimization import *
 
 from layouts.Layout_DOE import *
 from layouts.layout_parallel_chart import *
@@ -14,10 +16,17 @@ from layouts.layout_mlp_setup import *
 from layouts.layout_fast_mlp import *
 from layouts.layout_advanced_mlp import *
 from layouts.layout_mlp_evaluation import *
+from layouts.layout_optimization import *
+
+from apps.ReactionConstants import *
 
 from keras_files.KerasMLP import *
 from keras_files.KerasPredict import *
 from keras_files.KerasMLP_OPT import *
+
+M = 5.82
+MWm = 104.15
+Hours = 40
 
 with open('assets/status.txt', 'w') as file:
     file.write(str(0.0))
@@ -43,13 +52,14 @@ app.layout = html.Div([
     html.Div([
         dcc.Tabs(id='tabs', value='DOE', children=[
             dcc.Tab(label='Generate DOE', value='DOE'),
-            dcc.Tab(label='Generate Dataset with Simulated Cases', value='Simulate'),
+            dcc.Tab(label='Solve ODEs', value='Simulate'),
             dcc.Tab(label='Exploratory Data Analysis', value='Data_Analytics'),
             dcc.Tab(label='Parallel Chart', value='Parallel_Chart'),
             dcc.Tab(label='MLP Setup', value='MLP_Setup'),
             dcc.Tab(label='Fast MLP Training', value='Fast_MLP_Training'),
             dcc.Tab(label='Advanced MLP Training', value='Advanced_MLP_Training'),
             dcc.Tab(label='MLP Evaluation', value='MLP_Evaluation'),
+            dcc.Tab(label='Optimization', value='Optimization'),
             dcc.Tab(label='About', value='About'),
         ], style={'align': 'center', 'width': '100%', 'margin-left': 'auto', 'margin-right': 'auto'}),
     ]),
@@ -64,7 +74,7 @@ def update_tab_content(selected_tab):
     if selected_tab == 'DOE':
         return layout_DOE()
     elif selected_tab == 'Simulate':
-        return layout_simulate()
+        return layout_simulate(M, MWm, Hours)
     elif selected_tab == 'Data_Analytics':
         return layout_report()
     elif selected_tab == 'Parallel_Chart':
@@ -77,6 +87,8 @@ def update_tab_content(selected_tab):
         return layout_advanced_mlp()
     elif selected_tab == 'MLP_Evaluation':
         return layout_mlp_evaluation(input_columns)
+    elif selected_tab == 'Optimization':
+        return layout_optimization(output_columns)
     elif selected_tab == 'About':
         return layout_about()
 
@@ -188,16 +200,18 @@ def update_output(n_clicks):
 
 @app.callback([Output('simulation-btn', 'children', allow_duplicate=True),
                Output("progress", "value", allow_duplicate=True),
-               Output("progress", "label", allow_duplicate=True)],
+               Output("progress", "label", allow_duplicate=True),
+               Output("loading-output3", "children", allow_duplicate=True)],
               Input('simulation-btn', 'n_clicks'),
               prevent_initial_call=True)
 def simulate(n_clicks):
+    global Hours, MWm, M
     t = None
     y = None
-    SimulateODEs()
+    SimulateODEs(Hours, MWm, M)
     with open('assets/status.txt', 'w') as file:
         file.write(str(100))
-    return "Simulation Finished!", 100, 100
+    return "Simulation Finished!", 100, 100, ""
 
 
 @app.callback(
@@ -346,6 +360,63 @@ def OPTMLP(n_clicks):
 
     loading_status = ""
     return loading_status, image_components, best_hps_str, model_summary_str, r2_str
+
+
+@app.callback(Output('reaction_time_value', 'value'),
+              Input('reaction_time_value', 'value'))
+def update_time(value):
+    global Hours
+    Hours = value
+    return value
+
+
+@app.callback(Output('styrene_monomer_value', 'value'),
+              Input('styrene_monomer_value', 'value'))
+def update_styrene_monomer_value(value):
+    global M
+    M = value
+    return value
+
+
+@app.callback(Output('monomer_molar_mass_value', 'value'),
+              Input('monomer_molar_mass_value', 'value'))
+def update_monomer_molar_mass_value(value):
+    global MWm
+    MWm = value
+    return value
+
+
+@app.callback(Output('optimize-text', 'value'),
+              Output('optimization-time', 'value'),
+              Output("loading-output4", "children", allow_duplicate=True),
+              Input('optimize-button', 'n_clicks'),
+              State('input-desired-values-text', 'value'),
+              prevent_initial_call=True)
+def run_opt(n_clicks, input_value):
+    inicio = time.time()
+    try:
+        input_list = re.split(r'\s*[,\s;]\s*', input_value)
+        desired_values = np.array(list(map(float, input_list)))
+        ypred = optimize(desired_values, input_columns)
+
+        predicted_str = ""
+        for i in range(len(ypred)):
+            valor_formatado = f"{ypred[i]:.3e}"
+            predicted_str += f"{input_columns[i]}:  {valor_formatado}\n"
+
+        termino = time.time()
+        duracao = termino - inicio
+
+        minutos = int(duracao // 60)
+        segundos = int(duracao % 60)
+
+        exec_time = f"Optimization Time = {minutos}:{segundos:02d}"
+
+    except Exception as e:
+        predicted_str = ""
+        exec_time = "Optimization Error"
+
+    return predicted_str, exec_time, ""
 
 if __name__ == '__main__':
     app.run_server(host='127.0.0.5', port=8080, debug=False)
