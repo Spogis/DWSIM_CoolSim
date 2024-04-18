@@ -50,7 +50,7 @@ def layout_solve_once(M, MWm, Hours):
             dcc.Input(
                 id="POX_C_value",
                 type='number',
-                value="",
+                value=100.0,
                 disabled=False,
                 style={'width': '80px', 'textAlign': 'center', 'fontWeight': 'bold'}
             ),
@@ -60,7 +60,7 @@ def layout_solve_once(M, MWm, Hours):
             dcc.Input(
                 id="C_A_value",
                 type='number',
-                value="",
+                value=0.1,
                 disabled=False,
                 style={'width': '80px', 'textAlign': 'center', 'fontWeight': 'bold'}
             ),
@@ -70,8 +70,42 @@ def layout_solve_once(M, MWm, Hours):
             dcc.Input(
                 id="POX_M_value",
                 type='number',
-                value="",
+                value=0.001,
                 disabled=False,
+                style={'width': '80px', 'textAlign': 'center', 'fontWeight': 'bold'}
+            ),
+        ], style={'display': 'flex', 'justifyContent': 'center', 'alignItems': 'center', 'gap': '20px'}),
+
+        html.Br(),
+
+        html.Div([
+            html.Div("X:",
+                     style={'width': '150px', 'textAlign': 'center', 'paddingRight': '10px', 'fontWeight': 'bold'}),
+            dcc.Input(
+                id="final_X_value",
+                type='number',
+                value="",
+                disabled=True,
+                style={'width': '80px', 'textAlign': 'center', 'fontWeight': 'bold'}
+            ),
+
+            html.Div("PDI:",
+                     style={'width': '150px', 'textAlign': 'center', 'paddingRight': '10px', 'fontWeight': 'bold'}),
+            dcc.Input(
+                id="final_PDI_value",
+                type='number',
+                value="",
+                disabled=True,
+                style={'width': '80px', 'textAlign': 'center', 'fontWeight': 'bold'}
+            ),
+
+            html.Div("Mn:",
+                     style={'width': '150px', 'textAlign': 'center', 'paddingRight': '10px', 'fontWeight': 'bold'}),
+            dcc.Input(
+                id="final_Mn_value",
+                type='number',
+                value="",
+                disabled=True,
                 style={'width': '80px', 'textAlign': 'center', 'fontWeight': 'bold'}
             ),
         ], style={'display': 'flex', 'justifyContent': 'center', 'alignItems': 'center', 'gap': '20px'}),
@@ -85,12 +119,17 @@ def layout_solve_once(M, MWm, Hours):
 
         html.Br(),
         dbc.Spinner(html.Div(id="loading-output4"), spinner_style={"marginTop": "40px"}),
-        html.Br(),
-        html.Br(),
-        dcc.Graph(id='graph1', style={'display': 'none'}),
-        dcc.Graph(id='graph2', style={'display': 'none'}),
-        dcc.Graph(id='graph3', style={'display': 'none'}),
-        dcc.Graph(id='graph4', style={'display': 'none'}),
+
+        html.Div([
+            html.Br(),
+            html.Br(),
+            dcc.Graph(id='graph1', style={'display': 'none'}),
+            dcc.Graph(id='graph2', style={'display': 'none'}),
+            dcc.Graph(id='graph3', style={'display': 'none'}),
+            dcc.Graph(id='graph4', style={'display': 'none'}),
+            dcc.Graph(id='graph5', style={'display': 'none'}),
+            dcc.Graph(id='graph6', style={'display': 'none'}),
+        ], style={'align': 'center', 'width': '50%', 'margin-left': 'auto', 'margin-right': 'auto'}),
 
     ], style={'textAlign': 'center'})
 

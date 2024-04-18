@@ -453,6 +453,13 @@ def run_opt(n_clicks, input_value):
               Output('graph3', 'style'),
               Output('graph4', 'figure'),
               Output('graph4', 'style'),
+              Output('graph5', 'figure'),
+              Output('graph5', 'style'),
+              Output('graph6', 'figure'),
+              Output('graph6', 'style'),
+              Output('final_X_value', 'value'),
+              Output('final_PDI_value', 'value'),
+              Output('final_Mn_value', 'value'),
               Output("loading-output4", "children", allow_duplicate=True),
               Input('simulation-once-btn', 'n_clicks'),
               State('reaction_time_value_2', 'value'),
@@ -464,13 +471,15 @@ def run_opt(n_clicks, input_value):
               prevent_initial_call=True)
 def simulate(n_clicks, reaction_time_value_2, styrene_monomer_value_2, monomer_molar_mass_value_2, POX_M_value, C_A_value, POX_C_value):
     if n_clicks > 0:
-        fig1, fig2, fig3, fig4 = SimulateODEs_Once(reaction_time_value_2, monomer_molar_mass_value_2, styrene_monomer_value_2,
-                                 POX_M_value, C_A_value, POX_C_value)
+        fig1, fig2, fig3, fig4, fig5, fig6, final_X, final_PDI, final_Mn = SimulateODEs_Once(reaction_time_value_2,
+                                                                                             monomer_molar_mass_value_2,
+                                                                                             styrene_monomer_value_2,
+                                                                                             POX_M_value, C_A_value, POX_C_value)
         style = {'display': 'block'}
-        return fig1, style, fig2, style, fig3, style, fig4, style, ""
+        return fig1, style, fig2, style, fig3, style, fig4, style, fig5, style, fig6, style, final_X, final_PDI, final_Mn, ""
 
     style = {'display': 'none'}
-    return None, style, None, style, None, style, None, style, ""
+    return None, style, None, style, None, style, None, style, None, style, None, style, None, None, None, ""
 
 if __name__ == '__main__':
     app.run_server(host='127.0.0.5', port=8080, debug=False)

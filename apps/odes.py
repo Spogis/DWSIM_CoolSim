@@ -195,47 +195,165 @@ def SimulateODEs_Once(reation_time, MWm, M, POXM, CA, P0XC):
     ode_results = MoreUsableDataset(MWm)
 
     fig1 = go.Figure()
-    fig1.add_trace(go.Scatter(x=ode_results['Time'], y=ode_results['M'], mode='lines', name='Vl'))
-    fig1.update_layout(title={'text': 'Styrene Monomer Concentration',
-                              'y': 0.9,
-                              'x': 0.5,
-                              'xanchor': 'center',
-                              'yanchor': 'top'},
-                       title_font=dict(size=24),
-                       xaxis_title='Time [h]',
-                       yaxis_title='Styrene Monomer Concentration [mol⋅L−1]')
+    fig1.add_trace(go.Scatter(x=ode_results['Time'], y=ode_results['X'], mode='lines'))
+    fig1.update_layout(
+        title={'text': 'Conversion x Time',
+               'y': 0.9,
+               'x': 0.5,
+               'xanchor': 'center',
+               'yanchor': 'top'},
+        title_font=dict(size=24, family='Arial'),
+        xaxis_title='Time [h]',
+        yaxis_title='Conversion',
+        xaxis=dict(
+            title_font=dict(size=18, family='Arial'),
+            tickfont=dict(size=14, family='Arial'),
+        ),
+        yaxis=dict(
+            title_font=dict(size=18, family='Arial'),
+            tickfont=dict(size=14, family='Arial'),
+        ),
+        template='plotly_white',
+        margin=dict(l=60, r=60, t=60, b=60)
+    )
 
     fig2 = go.Figure()
-    fig2.add_trace(go.Scatter(x=ode_results['Time'], y=ode_results['X'], mode='lines', name='Vl'))
-    fig2.update_layout(title={'text': 'Conversion',
-                              'y': 0.9,
-                              'x': 0.5,
-                              'xanchor': 'center',
-                              'yanchor': 'top'},
-                       title_font=dict(size=24),
-                       xaxis_title='Time [h]',
-                       yaxis_title='Conversion')
+    fig2.add_trace(go.Scatter(
+        x=ode_results['X'],
+        y=[Mn * 10 ** 4 for Mn in ode_results['Mn']],
+        mode='lines',
+        line=dict(color='royalblue', width=2),
+    ))
+    fig2.update_layout(
+        title={'text': 'Number-average molecular weight x Conversion',
+               'y': 0.9,
+               'x': 0.5,
+               'xanchor': 'center',
+               'yanchor': 'top'},
+        title_font=dict(size=24, family='Arial'),
+        xaxis_title='Conversion',
+        yaxis_title='Mn*10^-4 [g/mol]',
+        xaxis=dict(
+            title_font=dict(size=18, family='Arial'),
+            tickfont=dict(size=14, family='Arial'),
+        ),
+        yaxis=dict(
+            title_font=dict(size=18, family='Arial'),
+            tickfont=dict(size=14, family='Arial'),
+        ),
+        template='plotly_white',
+        margin=dict(l=60, r=60, t=60, b=60)
+    )
 
     fig3 = go.Figure()
-    fig3.add_trace(go.Scatter(x=ode_results['Time'], y=ode_results['PDI'], mode='lines', name='Vl'))
-    fig3.update_layout(title={'text': 'Polydispersity Index (PDI)',
-                              'y': 0.9,
-                              'x': 0.5,
-                              'xanchor': 'center',
-                              'yanchor': 'top'},
-                       title_font=dict(size=24),
-                       xaxis_title='Time [h]',
-                       yaxis_title='Polydispersity Index')
+    fig3.add_trace(go.Scatter(x=ode_results['X'], y=ode_results['PDI'], mode='lines'))
+    fig3.update_layout(
+        title={'text': 'Polydispersity Index (PDI) x Conversion',
+               'y': 0.9,
+               'x': 0.5,
+               'xanchor': 'center',
+               'yanchor': 'top'},
+        title_font=dict(size=24, family='Arial'),
+        xaxis_title='Conversion',
+        yaxis_title='Polydispersity Index (PDI)',
+        xaxis=dict(
+            title_font=dict(size=18, family='Arial'),
+            tickfont=dict(size=14, family='Arial'),
+        ),
+        yaxis=dict(
+            title_font=dict(size=18, family='Arial'),
+            tickfont=dict(size=14, family='Arial'),
+        ),
+        template='plotly_white',
+        margin=dict(l=60, r=60, t=60, b=60)
+    )
 
     fig4 = go.Figure()
-    fig4.add_trace(go.Scatter(x=ode_results['Time'], y=ode_results['Mn'], mode='lines', name='Vl'))
-    fig4.update_layout(title={'text': 'Number-average molar mass',
-                              'y': 0.9,
-                              'x': 0.5,
-                              'xanchor': 'center',
-                              'yanchor': 'top'},
-                       title_font=dict(size=24),
-                       xaxis_title='Time [h]',
-                       yaxis_title='Number-average molar mass [g.mol−1]')
+    fig4.add_trace(go.Scatter(
+        x=ode_results['X'],
+        y=[C * 10 ** 6 for C in ode_results['C']],
+        mode='lines',
+        line=dict(color='royalblue', width=2),
+    ))
+    fig4.update_layout(
+        title={'text': 'Active catalyst concentration x Conversion',
+               'y': 0.9,
+               'x': 0.5,
+               'xanchor': 'center',
+               'yanchor': 'top'},
+        title_font=dict(size=24, family='Arial'),
+        xaxis_title='Conversion',
+        yaxis_title='C*10^6 [mol.L−1]',
+        xaxis=dict(
+            title_font=dict(size=18, family='Arial'),
+            tickfont=dict(size=14, family='Arial'),
+        ),
+        yaxis=dict(
+            title_font=dict(size=18, family='Arial'),
+            tickfont=dict(size=14, family='Arial'),
+        ),
+        template='plotly_white',
+        margin=dict(l=60, r=60, t=60, b=60)
+    )
 
-    return fig1, fig2, fig3, fig4
+    fig5 = go.Figure()
+    fig5.add_trace(go.Scatter(
+        x=ode_results['X'],
+        y=[CX * 10 ** 5 for CX in ode_results['CX']],
+        mode='lines',
+        line=dict(color='royalblue', width=2),
+    ))
+    fig5.update_layout(
+        title={'text': 'Inactive catalyst concentration x Conversion',
+               'y': 0.9,
+               'x': 0.5,
+               'xanchor': 'center',
+               'yanchor': 'top'},
+        title_font=dict(size=24, family='Arial'),
+        xaxis_title='Conversion',
+        yaxis_title='CX*10^5 [mol.L−1]',
+        xaxis=dict(
+            title_font=dict(size=18, family='Arial'),
+            tickfont=dict(size=14, family='Arial'),
+        ),
+        yaxis=dict(
+            title_font=dict(size=18, family='Arial'),
+            tickfont=dict(size=14, family='Arial'),
+        ),
+        template='plotly_white',
+        margin=dict(l=60, r=60, t=60, b=60)
+    )
+
+    fig6 = go.Figure()
+    fig6.add_trace(go.Scatter(
+        x=ode_results['X'],
+        y=[a * 10 ** 4 for a in ode_results['A']],
+        mode='lines',
+        line=dict(color='royalblue', width=2),
+    ))
+    fig6.update_layout(
+        title={'text': 'Reducing agent in reduced form x Conversion',
+               'y': 0.9,
+               'x': 0.5,
+               'xanchor': 'center',
+               'yanchor': 'top'},
+        title_font=dict(size=24, family='Arial'),
+        xaxis_title='Conversion',
+        yaxis_title='A*10^4 [mol.L−1]',
+        xaxis=dict(
+            title_font=dict(size=18, family='Arial'),
+            tickfont=dict(size=14, family='Arial'),
+        ),
+        yaxis=dict(
+            title_font=dict(size=18, family='Arial'),
+            tickfont=dict(size=14, family='Arial'),
+        ),
+        template='plotly_white',
+        margin=dict(l=60, r=60, t=60, b=60)
+    )
+
+    final_X = ode_results['X'].iloc[-1]
+    final_PDI = ode_results['PDI'].iloc[-1]
+    final_Mn = ode_results['Mn'].iloc[-1]
+
+    return fig1, fig2, fig3, fig4, fig5, fig6, final_X, final_PDI, final_Mn
