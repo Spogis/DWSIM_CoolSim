@@ -194,6 +194,9 @@ def SimulateODEs_Once(reation_time, MWm, M, POXM, CA, P0XC):
     SolveODEs(Initial_Conditions, reation_time)
     ode_results = MoreUsableDataset(MWm)
 
+    exportfile = 'datasets/Solve_Once_ODEs.xlsx'
+    ode_results.to_excel(exportfile, index=False)
+
     fig1 = go.Figure()
     fig1.add_trace(go.Scatter(x=ode_results['Time'], y=ode_results['X'], mode='lines'))
     fig1.update_layout(
