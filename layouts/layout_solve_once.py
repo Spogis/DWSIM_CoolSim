@@ -21,7 +21,7 @@ def layout_solve_once(M, MWm, Hours):
                 style={'width': '80px', 'textAlign': 'center', 'fontWeight': 'bold'}
             ),
 
-            html.Div("Styrene Monomer Concentration (mol⋅L−1):",
+            html.Div("Styrene Monomer Concentration [mol⋅L-1]:",
                      style={'width': '150px', 'textAlign': 'center', 'paddingRight': '10px', 'fontWeight': 'bold'}),
             dcc.Input(
                 id="styrene_monomer_value_2",
@@ -31,7 +31,7 @@ def layout_solve_once(M, MWm, Hours):
                 style={'width': '80px', 'textAlign': 'center', 'fontWeight': 'bold'}
             ),
 
-            html.Div("Monomer Molar Mass (g⋅mol−1):",
+            html.Div("Monomer Molar Mass [g⋅mol-1]:",
                      style={'width': '150px', 'textAlign': 'center', 'paddingRight': '10px', 'fontWeight': 'bold'}),
             dcc.Input(
                 id="monomer_molar_mass_value_2",
@@ -99,7 +99,7 @@ def layout_solve_once(M, MWm, Hours):
                 style={'width': '80px', 'textAlign': 'center', 'fontWeight': 'bold'}
             ),
 
-            html.Div("Mn:",
+            html.Div("Mn [g⋅mol-1]:",
                      style={'width': '150px', 'textAlign': 'center', 'paddingRight': '10px', 'fontWeight': 'bold'}),
             dcc.Input(
                 id="final_Mn_value",

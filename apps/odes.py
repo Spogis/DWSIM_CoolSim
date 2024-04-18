@@ -220,7 +220,7 @@ def SimulateODEs_Once(reation_time, MWm, M, POXM, CA, P0XC):
     fig2 = go.Figure()
     fig2.add_trace(go.Scatter(
         x=ode_results['X'],
-        y=[Mn * 10 ** 4 for Mn in ode_results['Mn']],
+        y=[Mn * 10 ** -4 for Mn in ode_results['Mn']],
         mode='lines',
         line=dict(color='royalblue', width=2),
     ))
@@ -327,9 +327,9 @@ def SimulateODEs_Once(reation_time, MWm, M, POXM, CA, P0XC):
     fig6 = go.Figure()
     fig6.add_trace(go.Scatter(
         x=ode_results['X'],
-        y=[a * 10 ** 4 for a in ode_results['A']],
+        y=[A * 10 ** 4 for A in ode_results['A']],
         mode='lines',
-        line=dict(color='royalblue', width=2),
+        line=dict(color='royalblue', width=2),  # Cor da linha e espessura
     ))
     fig6.update_layout(
         title={'text': 'Reducing agent in reduced form x Conversion',
@@ -339,7 +339,7 @@ def SimulateODEs_Once(reation_time, MWm, M, POXM, CA, P0XC):
                'yanchor': 'top'},
         title_font=dict(size=24, family='Arial'),
         xaxis_title='Conversion',
-        yaxis_title='A*10^4 [mol.L−1]',
+        yaxis_title='[A] [mol·L<sup>−1</sup>]',  # Título do eixo y sem multiplicador
         xaxis=dict(
             title_font=dict(size=18, family='Arial'),
             tickfont=dict(size=14, family='Arial'),
@@ -347,9 +347,19 @@ def SimulateODEs_Once(reation_time, MWm, M, POXM, CA, P0XC):
         yaxis=dict(
             title_font=dict(size=18, family='Arial'),
             tickfont=dict(size=14, family='Arial'),
+            tickformat=".0f",
+            exponentformat='e',
+            showexponent='all'
         ),
         template='plotly_white',
         margin=dict(l=60, r=60, t=60, b=60)
+    )
+    fig6.add_annotation(
+        xref="paper", yref="paper",
+        x=0.0, y=1.05,
+        text="×10<sup>-4</sup>",
+        showarrow=False,
+        font=dict(size=16, family="Arial"),
     )
 
     final_X = ode_results['X'].iloc[-1]
