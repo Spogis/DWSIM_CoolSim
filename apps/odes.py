@@ -2,6 +2,7 @@ import pandas as pd
 import numpy as np
 import io
 from scipy.integrate import solve_ivp
+import plotly.graph_objs as go
 
 from apps.ReactionConstants import *
 
@@ -174,3 +175,67 @@ def SimulateODEs(reation_time, MWm, M):
 
     exportfile = 'datasets/ODEs_Dataset.xlsx'
     exportdataset.to_excel(exportfile, index=False)
+
+
+def SimulateODEs_Once(reation_time, MWm, M, POXM, CA, P0XC):
+    global t, y
+    POX = POXM * M
+    C = POX / P0XC
+    A = C / CA
+
+    Initial_Conditions = [0, 0, 0,
+                          0, 0, 0,
+                          0, 0, 0,
+                          M,
+                          POX, 0,
+                          C, 0,
+                          A, 0]
+
+    SolveODEs(Initial_Conditions, reation_time)
+    ode_results = MoreUsableDataset(MWm)
+
+    fig1 = go.Figure()
+    fig1.add_trace(go.Scatter(x=ode_results['Time'], y=ode_results['M'], mode='lines', name='Vl'))
+    fig1.update_layout(title={'text': 'Styrene Monomer Concentration',
+                              'y': 0.9,
+                              'x': 0.5,
+                              'xanchor': 'center',
+                              'yanchor': 'top'},
+                       title_font=dict(size=24),
+                       xaxis_title='Time [h]',
+                       yaxis_title='Styrene Monomer Concentration [mol⋅L−1]')
+
+    fig2 = go.Figure()
+    fig2.add_trace(go.Scatter(x=ode_results['Time'], y=ode_results['X'], mode='lines', name='Vl'))
+    fig2.update_layout(title={'text': 'Conversion',
+                              'y': 0.9,
+                              'x': 0.5,
+                              'xanchor': 'center',
+                              'yanchor': 'top'},
+                       title_font=dict(size=24),
+                       xaxis_title='Time [h]',
+                       yaxis_title='Conversion')
+
+    fig3 = go.Figure()
+    fig3.add_trace(go.Scatter(x=ode_results['Time'], y=ode_results['PDI'], mode='lines', name='Vl'))
+    fig3.update_layout(title={'text': 'Polydispersity Index (PDI)',
+                              'y': 0.9,
+                              'x': 0.5,
+                              'xanchor': 'center',
+                              'yanchor': 'top'},
+                       title_font=dict(size=24),
+                       xaxis_title='Time [h]',
+                       yaxis_title='Polydispersity Index')
+
+    fig4 = go.Figure()
+    fig4.add_trace(go.Scatter(x=ode_results['Time'], y=ode_results['Mn'], mode='lines', name='Vl'))
+    fig4.update_layout(title={'text': 'Number-average molar mass',
+                              'y': 0.9,
+                              'x': 0.5,
+                              'xanchor': 'center',
+                              'yanchor': 'top'},
+                       title_font=dict(size=24),
+                       xaxis_title='Time [h]',
+                       yaxis_title='Number-average molar mass [g.mol−1]')
+
+    return fig1, fig2, fig3, fig4

@@ -17,6 +17,7 @@ from layouts.layout_fast_mlp import *
 from layouts.layout_advanced_mlp import *
 from layouts.layout_mlp_evaluation import *
 from layouts.layout_optimization import *
+from layouts.layout_solve_once import *
 
 from apps.ReactionConstants import *
 
@@ -50,37 +51,40 @@ app.layout = html.Div([
     ], style={'text-align': 'center', 'margin-bottom': '10px'}),
 
     html.Div([
-        dcc.Tabs(id='tabs', value='DOE', children=[
-            dcc.Tab(label='Generate DOE', value='DOE',
-                    style={'fontSize': '18px'},
-                    selected_style={'fontSize': '18px', 'backgroundColor': 'blue', 'color': 'white'}),
-            dcc.Tab(label='Solve ODEs', value='Simulate',
-                    style={'fontSize': '18px'},
-                    selected_style={'fontSize': '18px', 'backgroundColor': 'blue', 'color': 'white'}),
-            dcc.Tab(label='Exploratory Data Analysis', value='Data_Analytics',
-                    style={'fontSize': '18px'},
-                    selected_style={'fontSize': '18px', 'backgroundColor': 'blue', 'color': 'white'}),
+        dcc.Tabs(id='tabs', value='Simulate_Once', children=[
+            dcc.Tab(label='Solve ODEs', value='Simulate_Once',
+                    style={'fontSize': '16px'},
+                    selected_style={'fontSize': '16px', 'backgroundColor': 'blue', 'color': 'white'}),
+            dcc.Tab(label='DOE Setup', value='DOE',
+                    style={'fontSize': '16px'},
+                    selected_style={'fontSize': '16px', 'backgroundColor': 'blue', 'color': 'white'}),
+            dcc.Tab(label='Run DOE', value='Simulate',
+                    style={'fontSize': '16px'},
+                    selected_style={'fontSize': '16px', 'backgroundColor': 'blue', 'color': 'white'}),
+            dcc.Tab(label='EDA', value='Data_Analytics',
+                    style={'fontSize': '16px'},
+                    selected_style={'fontSize': '16px', 'backgroundColor': 'blue', 'color': 'white'}),
             dcc.Tab(label='Parallel Chart', value='Parallel_Chart',
-                    style={'fontSize': '18px'},
-                    selected_style={'fontSize': '18px', 'backgroundColor': 'blue', 'color': 'white'}),
+                    style={'fontSize': '16px'},
+                    selected_style={'fontSize': '16px', 'backgroundColor': 'blue', 'color': 'white'}),
             dcc.Tab(label='MLP Setup', value='MLP_Setup',
-                    style={'fontSize': '18px'},
-                    selected_style={'fontSize': '18px', 'backgroundColor': 'blue', 'color': 'white'}),
-            dcc.Tab(label='Fast MLP Training', value='Fast_MLP_Training',
-                    style={'fontSize': '18px'},
-                    selected_style={'fontSize': '18px', 'backgroundColor': 'blue', 'color': 'white'}),
-            dcc.Tab(label='Advanced MLP Training', value='Advanced_MLP_Training',
-                    style={'fontSize': '18px'},
-                    selected_style={'fontSize': '18px', 'backgroundColor': 'blue', 'color': 'white'}),
+                    style={'fontSize': '16px'},
+                    selected_style={'fontSize': '16px', 'backgroundColor': 'blue', 'color': 'white'}),
+            dcc.Tab(label='Fast MLP', value='Fast_MLP_Training',
+                    style={'fontSize': '16px'},
+                    selected_style={'fontSize': '16px', 'backgroundColor': 'blue', 'color': 'white'}),
+            dcc.Tab(label='Advanced MLP', value='Advanced_MLP_Training',
+                    style={'fontSize': '16px'},
+                    selected_style={'fontSize': '16px', 'backgroundColor': 'blue', 'color': 'white'}),
             dcc.Tab(label='MLP Evaluation', value='MLP_Evaluation',
-                    style={'fontSize': '18px'},
-                    selected_style={'fontSize': '18px', 'backgroundColor': 'blue', 'color': 'white'}),
+                    style={'fontSize': '16px'},
+                    selected_style={'fontSize': '16px', 'backgroundColor': 'blue', 'color': 'white'}),
             dcc.Tab(label='Optimization', value='Optimization',
-                    style={'fontSize': '18px'},
-                    selected_style={'fontSize': '18px', 'backgroundColor': 'blue', 'color': 'white'}),
+                    style={'fontSize': '16px'},
+                    selected_style={'fontSize': '16px', 'backgroundColor': 'blue', 'color': 'white'}),
             dcc.Tab(label='About', value='About',
-                    style={'fontSize': '18px'},
-                    selected_style={'fontSize': '18px', 'backgroundColor': 'blue', 'color': 'white'}),
+                    style={'fontSize': '16px'},
+                    selected_style={'fontSize': '16px', 'backgroundColor': 'blue', 'color': 'white'}),
         ], style={'align': 'center', 'width': '100%', 'margin-left': 'auto', 'margin-right': 'auto'}),
     ]),
     dcc.Store(id='store-data'),
@@ -93,6 +97,8 @@ app.layout = html.Div([
 def update_tab_content(selected_tab):
     if selected_tab == 'DOE':
         return layout_DOE()
+    elif selected_tab == 'Simulate_Once':
+        return layout_solve_once(M, MWm, Hours)
     elif selected_tab == 'Simulate':
         return layout_simulate(M, MWm, Hours)
     elif selected_tab == 'Data_Analytics':
@@ -437,6 +443,34 @@ def run_opt(n_clicks, input_value):
         exec_time = "Optimization Error"
 
     return predicted_str, exec_time, ""
+
+
+@app.callback(Output('graph1', 'figure'),
+              Output('graph1', 'style'),
+              Output('graph2', 'figure'),
+              Output('graph2', 'style'),
+              Output('graph3', 'figure'),
+              Output('graph3', 'style'),
+              Output('graph4', 'figure'),
+              Output('graph4', 'style'),
+              Output("loading-output4", "children", allow_duplicate=True),
+              Input('simulation-once-btn', 'n_clicks'),
+              State('reaction_time_value_2', 'value'),
+              State('styrene_monomer_value_2', 'value'),
+              State('monomer_molar_mass_value_2', 'value'),
+              State('POX_M_value', 'value'),
+              State('C_A_value', 'value'),
+              State('POX_C_value', 'value'),
+              prevent_initial_call=True)
+def simulate(n_clicks, reaction_time_value_2, styrene_monomer_value_2, monomer_molar_mass_value_2, POX_M_value, C_A_value, POX_C_value):
+    if n_clicks > 0:
+        fig1, fig2, fig3, fig4 = SimulateODEs_Once(reaction_time_value_2, monomer_molar_mass_value_2, styrene_monomer_value_2,
+                                 POX_M_value, C_A_value, POX_C_value)
+        style = {'display': 'block'}
+        return fig1, style, fig2, style, fig3, style, fig4, style, ""
+
+    style = {'display': 'none'}
+    return None, style, None, style, None, style, None, style, ""
 
 if __name__ == '__main__':
     app.run_server(host='127.0.0.5', port=8080, debug=False)
