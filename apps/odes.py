@@ -4,6 +4,9 @@ import io
 from scipy.integrate import solve_ivp
 import plotly.graph_objs as go
 
+from tensorflow.keras.models import load_model
+import pickle
+
 from apps.ReactionConstants import *
 
 
@@ -369,3 +372,72 @@ def SimulateODEs_Once(reation_time, MWm, M, POXM, CA, P0XC):
     final_Mn = ode_results['Mn'].iloc[-1]
 
     return fig1, fig2, fig3, fig4, fig5, fig6, final_X, final_PDI, final_Mn
+
+
+def MLP_Validation(reation_time, MWm, M):
+    df = pd.read_excel('datasets/DOE_LHC_Validation.xlsx')
+    numberofsimulations = len(df)
+
+    exportdataset = pd.DataFrame(columns=['POX/C',
+                                          'C/A',
+                                          'POX/M',
+                                          'X',
+                                          'PDI',
+                                          'Mn',
+                                          'MLP_X',
+                                          'MLP_PDI',
+                                          'MLP_Mn'])
+
+    # Carrega o modelo
+    model = load_model('kerasoutput/Keras_MLP_Surrogate.keras')
+
+    # Carrega o scaler dos dados de entrada
+    with open('kerasoutput/scalerX.pkl', 'rb') as file:
+        scalerX = pickle.load(file)
+
+    # Carrega o scaler dos dados de saída
+    with open('kerasoutput/scalerY.pkl', 'rb') as file:
+        scalerY = pickle.load(file)
+
+
+    for i in range(numberofsimulations):
+        Temp_P0XC = df.iloc[i]['POX/C']
+        Temp_CA = df.iloc[i]['C/A']
+        Temp_POXM = df.iloc[i]['POX/M']
+        POX = Temp_POXM * M
+        C = POX / Temp_P0XC
+        A = C / Temp_CA
+
+        Initial_Conditions = [0, 0, 0,
+                              0, 0, 0,
+                              0, 0, 0,
+                              M,
+                              POX, 0,
+                              C, 0,
+                              A, 0]
+
+        SolveODEs(Initial_Conditions, reation_time)
+        results = MoreUsableDataset(MWm)
+
+        input_data = np.array([[Temp_P0XC, Temp_CA, Temp_POXM]])
+        X_valid = scalerX.transform(input_data)
+        ypred_Scaled = model.predict(X_valid)
+        ypred = scalerY.inverse_transform(ypred_Scaled)
+
+        MLP_X, MLP_PDI, MLP_Mn = ypred[0]
+
+        designdata = np.array([POX / C, C / A, POX / M,
+                               results['X'].iloc[-1],
+                               results['PDI'].iloc[-1],
+                               results['Mn'].iloc[-1],
+                               MLP_X, MLP_PDI, MLP_Mn])
+
+        exportdataset.loc[len(exportdataset)] = designdata
+
+        if i % int(numberofsimulations / 20) == 0:
+            status = round((i / numberofsimulations) * 100, 0)
+            with open('assets/status2.txt', 'w') as file:
+                file.write(str(status))
+
+    exportfile = 'datasets/MLP_Validation_Dataset.xlsx'
+    exportdataset.to_excel(exportfile, index=False)

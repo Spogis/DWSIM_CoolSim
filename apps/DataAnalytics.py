@@ -27,8 +27,12 @@ def data_analytics(df):
             "cramers": {"calculate": True},   # Correlação de Cramér para variáveis categóricas
             "auto": {"calculate": False}      # Desativa o cálculo automático para evitar duplicatas
         },
+
         explorative=True,
-        interactions={"continuous": True},
+        interactions={"continuous": False},  # Desativa a seção de Interactions
+        missing_diagrams={"bar": False, "matrix": False, "heatmap": False, "dendrogram": False},
+        # Desativa todas as visualizações de Missing Values
+        samples={"head": False, "tail": False},  # Desativa a seção de Sample
         title="Profiling Report"
     )
 

@@ -18,6 +18,7 @@ from layouts.layout_advanced_mlp import *
 from layouts.layout_mlp_evaluation import *
 from layouts.layout_optimization import *
 from layouts.layout_solve_once import *
+from layouts.layout_validate import *
 
 from apps.ReactionConstants import *
 
@@ -79,6 +80,9 @@ app.layout = html.Div([
             dcc.Tab(label='MLP Evaluation', value='MLP_Evaluation',
                     style={'fontSize': '16px'},
                     selected_style={'fontSize': '16px', 'backgroundColor': 'blue', 'color': 'white'}),
+            # dcc.Tab(label='MLP Validation', value='MLP_Validation',
+            #         style={'fontSize': '16px'},
+            #         selected_style={'fontSize': '16px', 'backgroundColor': 'blue', 'color': 'white'}),
             dcc.Tab(label='Optimization', value='Optimization',
                     style={'fontSize': '16px'},
                     selected_style={'fontSize': '16px', 'backgroundColor': 'blue', 'color': 'white'}),
@@ -113,6 +117,8 @@ def update_tab_content(selected_tab):
         return layout_advanced_mlp()
     elif selected_tab == 'MLP_Evaluation':
         return layout_mlp_evaluation(input_columns)
+    elif selected_tab == 'MLP_Validation':
+        return layout_validate(M, MWm, Hours)
     elif selected_tab == 'Optimization':
         return layout_optimization(output_columns)
     elif selected_tab == 'About':
@@ -480,6 +486,56 @@ def simulate(n_clicks, reaction_time_value_2, styrene_monomer_value_2, monomer_m
 
     style = {'display': 'none'}
     return None, style, None, style, None, style, None, style, None, style, None, style, None, None, None, ""
+
+
+@app.callback([Output('validation-btn', 'children', allow_duplicate=True),
+               Output("progress2", "value", allow_duplicate=True),
+               Output("progress2", "label", allow_duplicate=True),
+               Output("loading-output5", "children", allow_duplicate=True),
+               Output('Xrscore', 'value'),
+               Output('PDIrscore', 'value'),
+               Output('Mnrscore', 'value')],
+              Input('validation-btn', 'n_clicks'),
+              prevent_initial_call=True)
+def simulate(n_clicks):
+    global Hours, MWm, M
+    t = None
+    y = None
+    MLP_Validation(Hours, MWm, M)
+    with open('assets/status2.txt', 'w') as file:
+        file.write(str(100))
+
+    #Calculate R2 Scores
+    df = pd.read_excel('datasets/MLP_Validation_Dataset.xlsx')
+
+    X_r2 = r2_score(df['MLP_X'], df['X'])
+    X_formatado = f"{X_r2:.4f}"
+
+    PDI_r2 = r2_score(df['MLP_PDI'], df['PDI'])
+    PDI_formatado = f"{PDI_r2:.4f}"
+
+    Mn_r2 = r2_score(df['MLP_Mn'], df['Mn'])
+    Mn_formatado = f"{Mn_r2:.4f}"
+
+    return "Validation Finished!", 100, 100, "", X_formatado, PDI_formatado, Mn_formatado
+
+
+@app.callback(
+    [Output("progress2", "value", allow_duplicate=True),
+     Output("progress2", "label", allow_duplicate=True)],
+    Input('validation-btn', 'n_clicks'),
+    Input("progress-interval2", "n_intervals"),
+    prevent_initial_call=True)
+def update_progress(n_clicks, n):
+    status = 'assets/status2.txt'
+    with open(status, 'r') as file:
+        progress_value = file.read()
+        progress_value = float(progress_value)
+
+    progress = min(progress_value % 110, 100)
+    # only add text after 20% progress to ensure text isn't squashed too much
+    return progress, f"{progress} %" if progress >= 20 else ""
+
 
 if __name__ == '__main__':
     app.run_server(host='127.0.0.5', port=8080, debug=False)
