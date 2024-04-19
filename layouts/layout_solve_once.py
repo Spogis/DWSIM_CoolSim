@@ -14,7 +14,7 @@ def layout_solve_once(M, MWm, Hours):
             html.Div("Reaction Time (h):",
                      style={'width': '150px', 'textAlign': 'center', 'paddingRight': '10px', 'fontWeight': 'bold'}),
             dcc.Input(
-                id="reaction_time_value_2",
+                id="reaction_time_value",
                 type='number',
                 value=Hours,
                 disabled=False,
@@ -24,7 +24,7 @@ def layout_solve_once(M, MWm, Hours):
             html.Div("Styrene Monomer Concentration [mol⋅L-1]:",
                      style={'width': '150px', 'textAlign': 'center', 'paddingRight': '10px', 'fontWeight': 'bold'}),
             dcc.Input(
-                id="styrene_monomer_value_2",
+                id="styrene_monomer_value",
                 type='number',
                 value=M,
                 disabled=False,
@@ -34,7 +34,7 @@ def layout_solve_once(M, MWm, Hours):
             html.Div("Monomer Molar Mass [g⋅mol-1]:",
                      style={'width': '150px', 'textAlign': 'center', 'paddingRight': '10px', 'fontWeight': 'bold'}),
             dcc.Input(
-                id="monomer_molar_mass_value_2",
+                id="monomer_molar_mass_value",
                 type='number',
                 value=MWm,
                 disabled=False,
