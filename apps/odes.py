@@ -141,12 +141,10 @@ def SimulateODEs(reation_time, MWm, M):
                                           'X',
                                           'PDI',
                                           'Mn'])
-
     for i in range(numberofsimulations):
         Temp_P0XC = df.iloc[i]['POX/C']
         Temp_CA = df.iloc[i]['C/A']
         Temp_POXM = df.iloc[i]['POX/M']
-
         POX = Temp_POXM * M
         C = POX / Temp_P0XC
         A = C / Temp_CA
