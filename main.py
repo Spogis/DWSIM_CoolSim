@@ -80,9 +80,9 @@ app.layout = html.Div([
             dcc.Tab(label='MLP Evaluation', value='MLP_Evaluation',
                     style={'fontSize': '16px'},
                     selected_style={'fontSize': '16px', 'backgroundColor': 'blue', 'color': 'white'}),
-            # dcc.Tab(label='MLP Validation', value='MLP_Validation',
-            #         style={'fontSize': '16px'},
-            #         selected_style={'fontSize': '16px', 'backgroundColor': 'blue', 'color': 'white'}),
+            dcc.Tab(label='MLP Validation', value='MLP_Validation',
+                    style={'fontSize': '16px'},
+                    selected_style={'fontSize': '16px', 'backgroundColor': 'blue', 'color': 'white'}),
             dcc.Tab(label='Optimization', value='Optimization',
                     style={'fontSize': '16px'},
                     selected_style={'fontSize': '16px', 'backgroundColor': 'blue', 'color': 'white'}),
@@ -187,9 +187,13 @@ def udpate_table(data):
                     # if one choice
                     dff = dff[dff[col].between(rng[0], rng[1])]
         descriptive_stats = dff.describe().reset_index()
+        exportfile = 'datasets/Parallel_Filter_Stats.xlsx'
+        descriptive_stats.to_excel(exportfile, index=False)
         return descriptive_stats.to_dict('records')
 
     descriptive_stats = df_ODES_Dataset.describe().reset_index()
+    exportfile = 'datasets/Parallel_Filter_Stats.xlsx'
+    descriptive_stats.to_excel(exportfile, index=False)
     return descriptive_stats.to_dict('records')
 
 @app.callback(
@@ -494,30 +498,57 @@ def simulate(n_clicks, reaction_time_value_2, styrene_monomer_value_2, monomer_m
                Output("loading-output5", "children", allow_duplicate=True),
                Output('Xrscore', 'value'),
                Output('PDIrscore', 'value'),
-               Output('Mnrscore', 'value')],
+               Output('Mnrscore', 'value'),
+               Output('POX_C_rscore', 'value'),
+               Output('C_A_rscore', 'value'),
+               Output('POX_M_rscore', 'value')],
               Input('validation-btn', 'n_clicks'),
+              State('Validation_Cases', 'value'),
               prevent_initial_call=True)
-def simulate(n_clicks):
+def simulate(n_clicks, ValidationCases):
     global Hours, MWm, M
+    global input_columns
     t = None
     y = None
-    MLP_Validation(Hours, MWm, M)
-    with open('assets/status2.txt', 'w') as file:
-        file.write(str(100))
 
-    #Calculate R2 Scores
-    df = pd.read_excel('datasets/MLP_Validation_Dataset.xlsx')
+    print(input_columns)
 
-    X_r2 = r2_score(df['MLP_X'], df['X'])
-    X_formatado = f"{X_r2:.4f}"
+    if input_columns == ['POX/C', 'C/A', 'POX/M']:
+        MLP_Validation(Hours, MWm, M, ValidationCases)
+        #Calculate R2 Scores
+        df = pd.read_excel('datasets/MLP_Validation_Dataset.xlsx')
 
-    PDI_r2 = r2_score(df['MLP_PDI'], df['PDI'])
-    PDI_formatado = f"{PDI_r2:.4f}"
+        X_r2 = mean_absolute_percentage_error(df['MLP_X'], df['X'])*100
+        X_formatado = f"{X_r2:.2f}%"
 
-    Mn_r2 = r2_score(df['MLP_Mn'], df['Mn'])
-    Mn_formatado = f"{Mn_r2:.4f}"
+        PDI_r2 = mean_absolute_percentage_error(df['MLP_PDI'], df['PDI'])*100
+        PDI_formatado = f"{PDI_r2:.2f}%"
 
-    return "Validation Finished!", 100, 100, "", X_formatado, PDI_formatado, Mn_formatado
+        Mn_r2 = mean_absolute_percentage_error(df['MLP_Mn'], df['Mn'])*100
+        Mn_formatado = f"{Mn_r2:.2f}%"
+        with open('assets/status2.txt', 'w') as file:
+            file.write(str(100))
+
+        return "Validation Finished!", 100, 100, "", X_formatado, PDI_formatado, Mn_formatado, "N/A", "N/A", "N/A"
+
+    if input_columns == ['X','PDI','Mn']:
+        Inverse_MLP_Validation(Hours, MWm, M, ValidationCases)
+        # Calculate R2 Scores
+        df = pd.read_excel('datasets/MLP_Validation_Dataset.xlsx')
+
+        POX_C_r2 = mean_absolute_percentage_error(df['MLP_POX/C'], df['POX/C'])*100
+        POX_C_formatado = f"{POX_C_r2:.2f}%"
+
+        C_A_r2 = mean_absolute_percentage_error(df['MLP_C/A'], df['C/A'])*100
+        C_A_formatado = f"{C_A_r2:.2f}%"
+
+        POX_M_r2 = mean_absolute_percentage_error(df['MLP_POX/M'], df['MLP_POX/M'])*100
+        POX_M_formatado = f"{POX_M_r2:.2f}%"
+
+        with open('assets/status2.txt', 'w') as file:
+            file.write(str(100))
+
+        return "Validation Finished!", 100, 100, "", "N/A", "N/A", "N/A", POX_C_formatado, C_A_formatado, POX_M_formatado
 
 
 @app.callback(
