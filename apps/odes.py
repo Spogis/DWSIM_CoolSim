@@ -95,12 +95,12 @@ def SolveODEs(initial_conditions, reation_time):
     global t, y
     total_time = reation_time*3600
     #t_eval = np.linspace(0, total_time, num=int(total_time*10), endpoint=True)
-    t_eval = np.linspace(0, total_time, 10001, endpoint=True)
+    t_eval = np.linspace(0, total_time, 1001, endpoint=True)
 
     sol = solve_ivp(ARGET_ODES,
                 [0, total_time],
                 initial_conditions,
-                method='LSODA', #Radau / LSODA
+                method='Radau', #Radau / LSODA
                 t_eval=t_eval)
     t = np.transpose(sol.t)
     y = np.transpose(sol.y)
