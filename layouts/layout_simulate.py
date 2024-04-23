@@ -1,6 +1,5 @@
 import dash
 from dash import dcc, html, Input, Output, State, ctx, dash_table, Patch
-import dash_bootstrap_components as dbc
 import pandas as pd
 from dash.dash_table.Format import Format, Scheme
 import dash_bootstrap_components as dbc
@@ -11,8 +10,10 @@ def layout_simulate(M, MWm, Hours):
         html.Br(),
 
         html.Div([
-            html.Div("Reaction Time (h):",
+
+            html.Div("Reaction Time (h):", id="tooltip-reaction-time",
                      style={'width': '150px', 'textAlign': 'center', 'paddingRight': '10px', 'fontWeight': 'bold'}),
+
             dcc.Input(
                 id="reaction_time_value",
                 type='number',

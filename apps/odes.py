@@ -237,7 +237,7 @@ def SimulateODEs_Once(reation_time, MWm, M, POXM, CA, P0XC):
                'yanchor': 'top'},
         title_font=dict(size=24, family='Arial'),
         xaxis_title='Conversion',
-        yaxis_title='Mn*10^-4 [g/mol]',
+        yaxis_title='Mn [g/mol]',
         xaxis=dict(
             title_font=dict(size=18, family='Arial'),
             tickfont=dict(size=14, family='Arial'),
@@ -248,6 +248,13 @@ def SimulateODEs_Once(reation_time, MWm, M, POXM, CA, P0XC):
         ),
         template='plotly_white',
         margin=dict(l=60, r=60, t=60, b=60)
+    )
+    fig2.add_annotation(
+        xref="paper", yref="paper",
+        x=0.0, y=1.05,
+        text="×10<sup>4</sup>",
+        showarrow=False,
+        font=dict(size=16, family="Arial"),
     )
 
     fig3 = go.Figure()
@@ -288,17 +295,25 @@ def SimulateODEs_Once(reation_time, MWm, M, POXM, CA, P0XC):
                'yanchor': 'top'},
         title_font=dict(size=24, family='Arial'),
         xaxis_title='Conversion',
-        yaxis_title='C*10^6 [mol.L−1]',
+        yaxis_title='C [mol.L−1]',
         xaxis=dict(
             title_font=dict(size=18, family='Arial'),
             tickfont=dict(size=14, family='Arial'),
         ),
         yaxis=dict(
+            range=[0, 5],
             title_font=dict(size=18, family='Arial'),
             tickfont=dict(size=14, family='Arial'),
         ),
         template='plotly_white',
         margin=dict(l=60, r=60, t=60, b=60)
+    )
+    fig4.add_annotation(
+        xref="paper", yref="paper",
+        x=0.0, y=1.05,
+        text="×10<sup>-6</sup>",
+        showarrow=False,
+        font=dict(size=16, family="Arial"),
     )
 
     fig5 = go.Figure()
@@ -316,17 +331,25 @@ def SimulateODEs_Once(reation_time, MWm, M, POXM, CA, P0XC):
                'yanchor': 'top'},
         title_font=dict(size=24, family='Arial'),
         xaxis_title='Conversion',
-        yaxis_title='CX*10^5 [mol.L−1]',
+        yaxis_title='CX [mol.L−1]',
         xaxis=dict(
             title_font=dict(size=18, family='Arial'),
             tickfont=dict(size=14, family='Arial'),
         ),
         yaxis=dict(
+            range=[5, 6],
             title_font=dict(size=18, family='Arial'),
             tickfont=dict(size=14, family='Arial'),
         ),
         template='plotly_white',
         margin=dict(l=60, r=60, t=60, b=60)
+    )
+    fig5.add_annotation(
+        xref="paper", yref="paper",
+        x=0.0, y=1.05,
+        text="×10<sup>-5</sup>",
+        showarrow=False,
+        font=dict(size=16, family="Arial"),
     )
 
     fig6 = go.Figure()

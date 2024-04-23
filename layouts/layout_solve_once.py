@@ -45,8 +45,15 @@ def layout_solve_once(M, MWm, Hours):
         html.Br(),
 
         html.Div([
-            html.Div("P0X/C:",
+            html.Div("P0X/C:", id="tooltip-pox-c",
                      style={'width': '150px', 'textAlign': 'center', 'paddingRight': '10px', 'fontWeight': 'bold'}),
+
+            dbc.Tooltip(
+                "P0X/C  = Initiator Concentration (P0X) / Active Catalyst Concentration (C)",
+                target="tooltip-pox-c",
+                placement="top"
+            ),
+
             dcc.Input(
                 id="POX_C_value",
                 type='number',
@@ -55,8 +62,15 @@ def layout_solve_once(M, MWm, Hours):
                 style={'width': '80px', 'textAlign': 'center', 'fontWeight': 'bold'}
             ),
 
-            html.Div("C/A:",
+            html.Div("C/A:", id="tooltip-c-a",
                      style={'width': '150px', 'textAlign': 'center', 'paddingRight': '10px', 'fontWeight': 'bold'}),
+
+            dbc.Tooltip(
+                "C/A  = Active Catalyst Concentration (C) / Reducing agent in reduced form Concentration (A)",
+                target="tooltip-c-a",
+                placement="top"
+            ),
+
             dcc.Input(
                 id="C_A_value",
                 type='number',
@@ -65,8 +79,15 @@ def layout_solve_once(M, MWm, Hours):
                 style={'width': '80px', 'textAlign': 'center', 'fontWeight': 'bold'}
             ),
 
-            html.Div("POX/M:",
+            html.Div("POX/M:", id="tooltip-pox-m",
                      style={'width': '150px', 'textAlign': 'center', 'paddingRight': '10px', 'fontWeight': 'bold'}),
+
+            dbc.Tooltip(
+                "POX/M = Initiator Concentration (P0X)  / Monomer Concentration (M)",
+                target="tooltip-pox-m",
+                placement="top"
+            ),
+
             dcc.Input(
                 id="POX_M_value",
                 type='number',
@@ -79,8 +100,15 @@ def layout_solve_once(M, MWm, Hours):
         html.Br(),
 
         html.Div([
-            html.Div("X:",
+            html.Div("X:", id="tooltip-x",
                      style={'width': '150px', 'textAlign': 'center', 'paddingRight': '10px', 'fontWeight': 'bold'}),
+
+            dbc.Tooltip(
+                "X = Monomer conversion",
+                target="tooltip-x",
+                placement="top"
+            ),
+
             dcc.Input(
                 id="final_X_value",
                 type='number',
@@ -89,8 +117,15 @@ def layout_solve_once(M, MWm, Hours):
                 style={'width': '80px', 'textAlign': 'center', 'fontWeight': 'bold'}
             ),
 
-            html.Div("PDI:",
+            html.Div("PDI:", id="tooltip-pdi",
                      style={'width': '150px', 'textAlign': 'center', 'paddingRight': '10px', 'fontWeight': 'bold'}),
+
+            dbc.Tooltip(
+                "PDI = Polydispersity",
+                target="tooltip-pdi",
+                placement="top"
+            ),
+
             dcc.Input(
                 id="final_PDI_value",
                 type='number',
@@ -99,8 +134,15 @@ def layout_solve_once(M, MWm, Hours):
                 style={'width': '80px', 'textAlign': 'center', 'fontWeight': 'bold'}
             ),
 
-            html.Div("Mn [g⋅mol-1]:",
+            html.Div("Mn [g⋅mol-1]:", id="tooltip-mn",
                      style={'width': '150px', 'textAlign': 'center', 'paddingRight': '10px', 'fontWeight': 'bold'}),
+
+            dbc.Tooltip(
+                "Mn = Number-average molar mass",
+                target="tooltip-mn",
+                placement="top"
+            ),
+
             dcc.Input(
                 id="final_Mn_value",
                 type='number',
