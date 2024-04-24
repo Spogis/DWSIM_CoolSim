@@ -4,7 +4,6 @@ import pandas as pd
 from dash.dash_table.Format import Format, Scheme
 import dash_bootstrap_components as dbc
 
-
 def initial_columns():
     df_drop_values = pd.read_excel('datasets/ODEs_Dataset.xlsx')
     if 'index' in df_drop_values.columns:
@@ -13,17 +12,26 @@ def initial_columns():
     # Geramos as opções do dropdown com todos os nomes das colunas.
     drop_options = [{'label': col, 'value': col} for col in df_drop_values.columns]
 
-    # Os três primeiros valores para o dropdown de entrada (input layer)
-    input_initial_values = df_drop_values.columns.tolist()[:]
-
-    # O restante das colunas para o dropdown de saída (output layer)
-    output_initial_values = df_drop_values.columns.tolist()[:]
-
-    return input_initial_values, output_initial_values, drop_options
+    return drop_options
 
 
-def layout_mlp_setup(input_columns, output_columns, drop_options):
+def layout_mlp_setup(input_columns, output_columns, drop_options, MLP_Type):
+    if MLP_Type == "Direct MLP":
+        input_columns = ['POX/C', 'C/A', 'POX/M']
+        output_columns = ['X', 'PDI', 'Mn']
+    if MLP_Type == "Inverse MLP":
+        input_columns = ['X', 'PDI', 'Mn']
+        output_columns = ['POX/C', 'C/A', 'POX/M']
+
     layout = html.Div([
+        html.Br(),
+        html.Label('MLP Setup:'),
+        dcc.Dropdown(
+            id='MLP-setup-selector',
+            multi=False,
+            options=["Direct MLP", "Inverse MLP", "Custom MLP"],
+            value=MLP_Type,
+        ),
         html.Br(),
         html.Label('MLP Input Layer:'),
         dcc.Dropdown(

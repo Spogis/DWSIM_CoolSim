@@ -8,6 +8,8 @@ from functools import partial
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
 import pickle
+import io
+from contextlib import redirect_stdout
 
 from keras_files.CleanData import *
 
@@ -42,8 +44,7 @@ def model_builder(hp, input_neurons=1, output_neurons=1):
     model.add(layers.InputLayer(input_shape=(input_neurons,)))
 
     # Permite ao Keras Tuner escolher entre várias funções de ativação
-    #activation_choice = hp.Choice('activation', values=['relu', 'tanh', 'sigmoid', 'softplus'])
-    activation_choice = hp.Choice('activation', values=['relu', 'tanh'])
+    activation_choice = hp.Choice('activation', values=['relu', 'tanh', 'elu', 'selu', 'sigmoid'])
 
     # Permite ao Keras Tuner decidir o número de camadas ocultas e neurônios
     for i in range(hp.Int('num_layers', 1, 3)):
@@ -57,7 +58,7 @@ def model_builder(hp, input_neurons=1, output_neurons=1):
     model.add(layers.Dense(output_neurons, kernel_initializer=initializer))  # Camada de saída
 
     # Compila o modelo
-    model.compile(optimizer=keras.optimizers.Adam(hp.Choice('learning_rate', [1e-3])),
+    model.compile(optimizer=keras.optimizers.Adam(hp.Choice('learning_rate', [1e-3, 5e-4, 1e-4])),
                   loss='mse',
                   metrics=['mae'])
 
@@ -144,16 +145,18 @@ def RunOptimizedMLP(Dataset, Input_Columns, Output_Columns):
     best_hps = tuner.get_best_hyperparameters(num_trials=1)[0]
 
     # Gerando a string de melhores hiperparâmetros
-    best_hps_str = 'Melhores hiperparâmetros encontrados:\n'
-    best_hps_str += f" - Número de camadas ocultas: {best_hps.get('num_layers')}\n"
+    best_hps_str = 'Best hyperparameters found:\n'
+    best_hps_str += f" - Number of hidden layers: {best_hps.get('num_layers')}\n"
+    best_hps_str += f" - Activation Function: {best_hps.get('activation')}\n"
     for i in range(best_hps.get('num_layers')):
-        best_hps_str += f" - Unidades na camada {i + 1}: {best_hps.get('units_' + str(i))}\n"
-    best_hps_str += f" - Taxa de aprendizado do otimizador: {best_hps.get('learning_rate')}\n"
+        best_hps_str += f" - Neurons in each layer {i + 1}: {best_hps.get('units_' + str(i))}\n"
+    best_hps_str += f" - Optimizer learning rate: {best_hps.get('learning_rate')}\n"
 
     # Gera o resumo da arquitetura
-    model_summary_str = []
-    best_model.summary(print_fn=lambda x: model_summary_str.append(x))
-    model_summary_str = "\n".join(model_summary_str)
+    f = io.StringIO()
+    with redirect_stdout(f):
+        best_model.summary()
+    model_summary_str = f.getvalue()
 
     # Regression Report
     ypred_Scaled = best_model.predict(X_valid)
@@ -168,14 +171,14 @@ def RunOptimizedMLP(Dataset, Input_Columns, Output_Columns):
         valor_formatado = f"{valor_r2:.4f}"
         r2_str += f"r² {Output_Columns[i]}:  {valor_formatado}\n"
 
-    best_model.save('assets/Keras_MLP_Surrogate.keras')
+    best_model.save('kerasoutput/Keras_MLP_Surrogate.keras')
 
     # Salva o scaler dos dados de entrada
-    with open('assets/scalerX.pkl', 'wb') as file:
+    with open('kerasoutput/scalerX.pkl', 'wb') as file:
         pickle.dump(scalerX, file)
 
     # Salva o scaler dos dados de saída
-    with open('assets/scalerY.pkl', 'wb') as file:
+    with open('kerasoutput/scalerY.pkl', 'wb') as file:
         pickle.dump(scalerY, file)
 
     # Define o caminho do diretório
@@ -222,6 +225,12 @@ def RunOptimizedMLP(Dataset, Input_Columns, Output_Columns):
     plt.legend(['Training Loss', 'Validation Loss'])
     plt.savefig('assets/images/00 - LossEpoch.png')
     plt.close()
+
+    limpar_KerasOutput('kerasoutput/Hyperband_Tuner')
+    caminho_completo = os.path.join('kerasoutput', 'temp.txt')
+    # Crie o arquivo vazio somente para que o commit tenha algo dentro do diretório
+    with open(caminho_completo, 'w') as arquivo:
+        pass
 
     return best_hps_str, model_summary_str, r2_str
 

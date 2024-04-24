@@ -9,6 +9,9 @@ import dash_bootstrap_components as dbc
 def layout_solve_once(M, MWm, Hours):
     layout = html.Div([
         html.Br(),
+        html.Div([
+        html.H2("Process Conditions:",
+                style={'display': 'flex', 'justifyContent': 'center', 'alignItems': 'center', 'fontWeight': 'bold'}),
 
         html.Div([
             html.Div("Reaction Time (h):",
@@ -41,8 +44,13 @@ def layout_solve_once(M, MWm, Hours):
                 style={'width': '80px', 'textAlign': 'center', 'fontWeight': 'bold'}
             ),
         ], style={'display': 'flex', 'justifyContent': 'center', 'alignItems': 'center', 'gap': '20px'}),
+        ], style={'padding': '20px', 'margin': 'auto', 'width': '800px', 'box-shadow': '0px 0px 10px #ccc',
+              'border-radius': '15px'}),
 
         html.Br(),
+        html.Div([
+        html.H2("Initial Conditions:",
+                style={'display': 'flex', 'justifyContent': 'center', 'alignItems': 'center', 'fontWeight': 'bold'}),
 
         html.Div([
             html.Div("P0X/C:", id="tooltip-pox-c",
@@ -96,8 +104,13 @@ def layout_solve_once(M, MWm, Hours):
                 style={'width': '80px', 'textAlign': 'center', 'fontWeight': 'bold'}
             ),
         ], style={'display': 'flex', 'justifyContent': 'center', 'alignItems': 'center', 'gap': '20px'}),
+        ], style={'padding': '20px', 'margin': 'auto', 'width': '800px', 'box-shadow': '0px 0px 10px #ccc',
+                  'border-radius': '15px'}),
 
         html.Br(),
+        html.Div([
+        html.H2("Final Reaction Values:",
+                style={'display': 'flex', 'justifyContent': 'center', 'alignItems': 'center', 'fontWeight': 'bold'}),
 
         html.Div([
             html.Div("X:", id="tooltip-x",
@@ -151,6 +164,8 @@ def layout_solve_once(M, MWm, Hours):
                 style={'width': '80px', 'textAlign': 'center', 'fontWeight': 'bold'}
             ),
         ], style={'display': 'flex', 'justifyContent': 'center', 'alignItems': 'center', 'gap': '20px'}),
+        ], style={'padding': '20px', 'margin': 'auto', 'width': '800px', 'box-shadow': '0px 0px 10px #ccc',
+                  'border-radius': '15px'}),
 
         html.Div([
             html.Br(),

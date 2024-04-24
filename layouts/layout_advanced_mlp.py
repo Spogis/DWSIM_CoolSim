@@ -27,13 +27,13 @@ def layout_advanced_mlp():
         html.H2("Best Hyperparameters:"),
         dcc.Textarea(
             id='best-hps-textarea',
-            style={'width': '100%', 'height': '100px', 'resize': 'none', 'fontWeight': 'bold'},
+            style={'width': '100%', 'height': '200px', 'resize': 'none', 'fontWeight': 'bold'},
             readOnly=True
         ),
         html.H2("Best Model Architecture:"),
         dcc.Textarea(
             id='model-summary-textarea',
-            style={'width': '100%', 'height': '100px', 'resize': 'none', 'fontWeight': 'bold'},
+            style={'width': '100%', 'height': '300px', 'resize': 'none', 'fontWeight': 'bold'},
             readOnly=True
         ),
         html.Br(),

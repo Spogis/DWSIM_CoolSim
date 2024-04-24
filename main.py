@@ -33,7 +33,11 @@ Hours = 40
 with open('assets/status.txt', 'w') as file:
     file.write(str(0.0))
 
-input_columns, output_columns, drop_options = initial_columns()
+MLP_Type = "Direct MLP"
+input_columns = ['POX/C', 'C/A', 'POX/M']
+output_columns = ['X', 'PDI', 'Mn']
+drop_options = initial_columns()
+
 
 # Inicializa o app Dash
 app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
@@ -110,7 +114,7 @@ def update_tab_content(selected_tab):
     elif selected_tab == 'Parallel_Chart':
         return parallel_chart()
     elif selected_tab == 'MLP_Setup':
-        return layout_mlp_setup(input_columns, output_columns, drop_options)
+        return layout_mlp_setup(input_columns, output_columns, drop_options, MLP_Type)
     elif selected_tab == 'Fast_MLP_Training':
         return layout_fast_mlp()
     elif selected_tab == 'Advanced_MLP_Training':
@@ -293,16 +297,18 @@ def save_excel(n_clicks, rows, num_simulacoes):
     return 'Save DOE Configuration!'
 
 
-@app.callback(Output('column-input-selector', 'value'),
-              Input('column-input-selector', 'value'))
+@app.callback(Output('column-input-selector', 'value', allow_duplicate=True),
+              Input('column-input-selector', 'value'),
+              prevent_initial_call=True)
 def update_table(selected_columns):
     global input_columns
     input_columns = selected_columns
     return selected_columns
 
 
-@app.callback(Output('column-output-selector', 'value'),
-              Input('column-output-selector', 'value'))
+@app.callback(Output('column-output-selector', 'value', allow_duplicate=True),
+              Input('column-output-selector', 'value'),
+              prevent_initial_call=True)
 def update_table(selected_columns):
     global output_columns
     output_columns = selected_columns
@@ -567,6 +573,28 @@ def update_progress(n_clicks, n):
     # only add text after 20% progress to ensure text isn't squashed too much
     return progress, f"{progress} %" if progress >= 20 else ""
 
+
+@app.callback(Output('column-input-selector', 'value', allow_duplicate=True),
+              Output('column-output-selector', 'value', allow_duplicate=True),
+              Input('MLP-setup-selector','value'),
+              prevent_initial_call=True)
+def change_MLP_setup(MLP_setup_selector):
+    global input_columns, output_columns, drop_options
+    global MLP_Type
+
+    if MLP_setup_selector == "Direct MLP":
+        MLP_Type = "Direct MLP"
+        input_columns = ['POX/C', 'C/A', 'POX/M']
+        output_columns = ['X', 'PDI', 'Mn']
+        return input_columns, output_columns
+    elif MLP_setup_selector == "Inverse MLP":
+        MLP_Type = "Inverse MLP"
+        input_columns =['X', 'PDI', 'Mn']
+        output_columns = ['POX/C', 'C/A', 'POX/M']
+        return input_columns, output_columns
+    else:
+        MLP_Type = "Custom MLP"
+        return drop_options, drop_options
 
 if __name__ == '__main__':
     app.run_server(host='127.0.0.5', port=8080, debug=False)
