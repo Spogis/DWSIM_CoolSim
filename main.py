@@ -81,10 +81,10 @@ app.layout = html.Div([
             dcc.Tab(label='Advanced MLP', value='Advanced_MLP_Training',
                     style={'fontSize': '16px'},
                     selected_style={'fontSize': '16px', 'backgroundColor': 'blue', 'color': 'white'}),
-            dcc.Tab(label='MLP Evaluation', value='MLP_Evaluation',
+            dcc.Tab(label='MLP Prediction', value='MLP_Evaluation',
                     style={'fontSize': '16px'},
                     selected_style={'fontSize': '16px', 'backgroundColor': 'blue', 'color': 'white'}),
-            dcc.Tab(label='MLP Validation', value='MLP_Validation',
+            dcc.Tab(label='MLP Test', value='MLP_Validation',
                     style={'fontSize': '16px'},
                     selected_style={'fontSize': '16px', 'backgroundColor': 'blue', 'color': 'white'}),
             dcc.Tab(label='Optimization', value='Optimization',
@@ -435,6 +435,7 @@ def update_monomer_molar_mass_value(value):
               State('input-desired-values-text', 'value'),
               prevent_initial_call=True)
 def run_opt(n_clicks, input_value):
+    global Hours, MWm, M
     inicio = time.time()
     try:
         input_list = re.split(r'\s*[,\s;]\s*', input_value)
@@ -535,7 +536,7 @@ def simulate(n_clicks, ValidationCases):
         with open('assets/status2.txt', 'w') as file:
             file.write(str(100))
 
-        return "Validation Finished!", 100, 100, "", X_formatado, PDI_formatado, Mn_formatado, "N/A", "N/A", "N/A"
+        return "MLP Test Finished!", 100, 100, "", X_formatado, PDI_formatado, Mn_formatado, "N/A", "N/A", "N/A"
 
     if input_columns == ['X','PDI','Mn']:
         Inverse_MLP_Validation(Hours, MWm, M, ValidationCases)
@@ -548,13 +549,13 @@ def simulate(n_clicks, ValidationCases):
         C_A_r2 = mean_absolute_percentage_error(df['MLP_C/A'], df['C/A'])*100
         C_A_formatado = f"{C_A_r2:.2f}%"
 
-        POX_M_r2 = mean_absolute_percentage_error(df['MLP_POX/M'], df['MLP_POX/M'])*100
+        POX_M_r2 = mean_absolute_percentage_error(df['MLP_POX/M'], df['POX/M'])*100
         POX_M_formatado = f"{POX_M_r2:.2f}%"
 
         with open('assets/status2.txt', 'w') as file:
             file.write(str(100))
 
-        return "Validation Finished!", 100, 100, "", "N/A", "N/A", "N/A", POX_C_formatado, C_A_formatado, POX_M_formatado
+        return "MLP Test Finished!", 100, 100, "", "N/A", "N/A", "N/A", POX_C_formatado, C_A_formatado, POX_M_formatado
 
 
 @app.callback(

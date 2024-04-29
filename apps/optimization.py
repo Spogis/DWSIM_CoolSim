@@ -9,6 +9,7 @@ import pandas as pd
 import numpy as np
 
 from keras_files.KerasPredict import *
+from apps.odes import *
 
 
 def objective_function(inputs, desired_values):
@@ -37,11 +38,7 @@ def optimize(desired_values, column_names):
     bounds = np.array(min_max_values)
     initial_params = np.array(only_min_values)
 
-    #results = differential_evolution(objective_function, bounds, args=(desired_values,), atol=1e-2)
-    #results = dual_annealing(objective_function, bounds, args=(desired_values,))
-    #results = minimize(objective_function, initial_params, args=(desired_values,), bounds=bounds, method='L-BFGS-B')
-
-    minimizer_kwargs = {'method': 'Powell', 'args': (desired_values,), 'bounds': bounds}
+    minimizer_kwargs = {'method': 'Powell', 'args': (desired_values), 'bounds': bounds}
     results = basinhopping(objective_function, x0=initial_params, minimizer_kwargs=minimizer_kwargs,
                            callback=callback, seed=42)
 

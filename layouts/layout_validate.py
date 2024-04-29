@@ -15,7 +15,7 @@ def layout_validate(M, MWm, Hours):
     layout = html.Div([
         html.Br(),
         html.Div([
-            html.Div("Number of Validation Cases:",
+            html.Div("Number of Test Cases:",
                      style={'width': '250px', 'textAlign': 'center', 'paddingRight': '10px', 'fontWeight': 'bold'}),
 
             dcc.Input(
@@ -26,7 +26,7 @@ def layout_validate(M, MWm, Hours):
                 style={'width': '80px', 'textAlign': 'center', 'fontWeight': 'bold'}
             ),
 
-            html.Button('Run Validation (ODE Solver + MLP)!', id='validation-btn', n_clicks=0,
+            html.Button('Run MLP Test (ODE Solver + MLP)!', id='validation-btn', n_clicks=0,
                         style={'backgroundColor': 'orange', 'color': 'white', 'fontWeight': 'bold',
                                'fontSize': '20px'}),
 

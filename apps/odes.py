@@ -394,6 +394,7 @@ def SimulateODEs_Once(reation_time, MWm, M, POXM, CA, P0XC):
     final_PDI = ode_results['PDI'].iloc[-1]
     final_Mn = ode_results['Mn'].iloc[-1]
 
+    print(final_X, final_PDI, final_Mn)
     return fig1, fig2, fig3, fig4, fig5, fig6, final_X, final_PDI, final_Mn
 
 

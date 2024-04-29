@@ -45,7 +45,6 @@ def layout_mlp_setup(input_columns, output_columns, drop_options, MLP_Type):
             id='input-table',
             page_size=3,
         ),
-        html.Br(),
         html.Label('MLP Output Layer:'),
         dcc.Dropdown(
             id='column-output-selector',
