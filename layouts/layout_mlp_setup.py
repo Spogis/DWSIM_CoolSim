@@ -22,6 +22,7 @@ def layout_mlp_setup(input_columns, output_columns, drop_options, MLP_Type):
     if MLP_Type == "Inverse MLP":
         input_columns = ['X', 'PDI', 'Mn']
         output_columns = ['POX/C', 'C/A', 'POX/M']
+    
 
     layout = html.Div([
         html.Br(),

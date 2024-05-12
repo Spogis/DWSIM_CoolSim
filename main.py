@@ -650,9 +650,10 @@ def update_editability(rows):
 @app.callback(
     Output('output-data-upload', 'children'),
     Input('upload-results', 'contents'),
-    prevent_initial_call=True
-)
+    prevent_initial_call=True)
 def save_uploaded_file(contents):
+    global drop_options, MLP_Type
+    global input_columns, output_columns
     if contents is None:
         raise PreventUpdate
 
@@ -663,6 +664,11 @@ def save_uploaded_file(contents):
         # Salvando o arquivo diretamente no diretório especificado
         with open('datasets/ODEs_Dataset.xlsx', 'wb') as f:
             f.write(decoded)
+        drop_options = initial_columns()
+        MLP_Type = "Custom MLP"
+        input_columns = drop_options
+        output_columns = drop_options
+
         return html.Div([
             html.H6('File uploaded and saved successfully!')
         ])
