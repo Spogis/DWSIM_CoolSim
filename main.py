@@ -1,6 +1,7 @@
 import re
 import time
 from datetime import datetime
+import base64
 
 from doe.DOE import *
 from apps.DataAnalytics import *
@@ -596,6 +597,42 @@ def change_MLP_setup(MLP_setup_selector):
     else:
         MLP_Type = "Custom MLP"
         return drop_options, drop_options
+
+
+@app.callback([Output('table', 'data', allow_duplicate=True),
+               Output('numero_de_simulacoes', 'value')],
+              [Input('upload-data', 'contents')],
+              [State('upload-data', 'filename')],
+              prevent_initial_call=True)
+def update_output(contents, filename):
+    if contents is not None:
+        content_type, content_string = contents.split(',')
+        decoded = base64.b64decode(content_string)
+        if 'xlsx' in filename:
+            initial_df_data = pd.read_excel(io.BytesIO(decoded), sheet_name='DOE')
+            simulation_cases = pd.read_excel(io.BytesIO(decoded), sheet_name='infos')
+            cases = simulation_cases['Number of Simulations'].max()
+            rows = initial_df_data.to_dict('records')
+            return rows, cases
+    return dash.no_update, dash.no_update
+
+
+@app.callback([Output('table', 'data', allow_duplicate=True),
+               Output('save-doe-btn', 'children', allow_duplicate=True),
+               Output('create-doe-btn', 'children', allow_duplicate=True)],
+              Input('adding-rows-btn', 'n_clicks'),
+              [State('table', 'data')],
+              prevent_initial_call=True
+)
+
+def add_row(n_clicks, rows):
+    if n_clicks > 0:
+        rows.append({col: ('' if col not in ['Variable Name', 'Variable Type', 'Trust Level']
+                           else '0.95' if col == 'Trust Level'  # Definindo 95% para a coluna 'Trust Level'
+                           else variable_types[0] if col == 'Variable Type'
+                           else '')
+                     for col in df.columns})
+    return rows, 'Salve DOE Configuration!', 'Create DOE'
 
 if __name__ == '__main__':
     app.run_server(host='127.0.0.5', port=8080, debug=False)

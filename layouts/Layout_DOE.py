@@ -30,6 +30,17 @@ def layout_DOE():
 
     layout = html.Div([
         html.Br(),
+        dcc.Upload(
+            id='upload-data',
+            children=html.Div(['Drag or ', html.A('Select a File')]),
+            style={
+                'width': '100%', 'height': '60px', 'lineHeight': '60px',
+                'borderWidth': '3px', 'borderStyle': 'dashed', 'borderRadius': '10px',
+                'textAlign': 'center'
+            },
+            multiple=False  # Permite a seleção de um único arquivo por vez
+        ),
+        html.Br(),
         dash_table.DataTable(
             id='table',
             columns=[
@@ -65,7 +76,7 @@ def layout_DOE():
             style_header={
                 'textAlign': 'center'  # Centraliza o texto no cabeçalho também
             },
-            row_deletable=False,
+            row_deletable=True,
             dropdown={
                 'Variable Type': {
                     'options': [
@@ -85,6 +96,10 @@ def layout_DOE():
 
         html.Div([
             html.Br(),
+            html.Button('Add new Line', id='adding-rows-btn', n_clicks=0,
+                        style={'width': '400px', 'backgroundColor': 'green', 'color': 'white',
+                               'fontWeight': 'bold', 'fontSize': '20px', 'marginRight': '50px'}),
+
             html.Button('Save DOE Configuration!', id='save-doe-btn', n_clicks=0,
                         style={'width': '400px', 'backgroundColor': 'green', 'color': 'white',
                                'fontWeight': 'bold', 'fontSize': '20px', 'marginRight': '50px'}),
