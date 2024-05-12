@@ -2,13 +2,14 @@ import re
 import time
 from datetime import datetime
 import base64
+from dash.exceptions import PreventUpdate
 
 from doe.DOE import *
 from apps.DataAnalytics import *
 from apps.odes import *
 from apps.optimization import *
 
-from layouts.Layout_DOE import *
+from layouts.layout_DOE import *
 from layouts.layout_parallel_chart import *
 from layouts.layout_report import *
 from layouts.layout_simulate import *
@@ -20,6 +21,7 @@ from layouts.layout_mlp_evaluation import *
 from layouts.layout_optimization import *
 from layouts.layout_solve_once import *
 from layouts.layout_validate import *
+from layouts.layout_upload_results import *
 
 from apps.ReactionConstants import *
 
@@ -67,6 +69,9 @@ app.layout = html.Div([
             dcc.Tab(label='Run DOE', value='Simulate',
                     style={'fontSize': '16px'},
                     selected_style={'fontSize': '16px', 'backgroundColor': 'blue', 'color': 'white'}),
+            dcc.Tab(label='Upload Results', value='Upload',
+                    style={'fontSize': '16px'},
+                    selected_style={'fontSize': '16px', 'backgroundColor': 'blue', 'color': 'white'}),
             dcc.Tab(label='EDA', value='Data_Analytics',
                     style={'fontSize': '16px'},
                     selected_style={'fontSize': '16px', 'backgroundColor': 'blue', 'color': 'white'}),
@@ -110,6 +115,8 @@ def update_tab_content(selected_tab):
         return layout_solve_once(M, MWm, Hours)
     elif selected_tab == 'Simulate':
         return layout_simulate(M, MWm, Hours)
+    elif selected_tab == 'Upload':
+        return layout_upload_results()
     elif selected_tab == 'Data_Analytics':
         return layout_report()
     elif selected_tab == 'Parallel_Chart':
@@ -128,22 +135,6 @@ def update_tab_content(selected_tab):
         return layout_optimization(output_columns)
     elif selected_tab == 'About':
         return layout_about()
-
-@app.callback(Output('table', 'style_data_conditional', allow_duplicate=True),
-              Input('table', 'data'),
-              prevent_initial_call=True)
-def update_editability(rows):
-    # Verifica se alguma linha tem 'Variable Type' definido como 'Discrete'
-    conditions = []
-    for i, row in enumerate(rows):
-        if row['Variable Type'] == 'Discrete':
-            conditions.append({
-                'if': {'row_index': i, 'column_id': 'Step (If Variable is Discrete)'},
-                'backgroundColor': '#FAFAFA',
-                'border': '1px solid blue',
-                # Aqui você pode aplicar estilos adicionais se necessário
-            })
-    return conditions
 
 
 @app.callback(Output('create-doe-btn', 'children', allow_duplicate=True),
@@ -600,7 +591,9 @@ def change_MLP_setup(MLP_setup_selector):
 
 
 @app.callback([Output('table', 'data', allow_duplicate=True),
-               Output('numero_de_simulacoes', 'value')],
+               Output('numero_de_simulacoes', 'value'),
+               Output('save-doe-btn', 'children', allow_duplicate=True),
+               Output('create-doe-btn', 'children', allow_duplicate=True)],
               [Input('upload-data', 'contents')],
               [State('upload-data', 'filename')],
               prevent_initial_call=True)
@@ -613,8 +606,8 @@ def update_output(contents, filename):
             simulation_cases = pd.read_excel(io.BytesIO(decoded), sheet_name='infos')
             cases = simulation_cases['Number of Simulations'].max()
             rows = initial_df_data.to_dict('records')
-            return rows, cases
-    return dash.no_update, dash.no_update
+            return rows, cases, 'Save DOE Configuration!', 'Create DOE'
+    return dash.no_update, dash.no_update, dash.no_update, dash.no_update
 
 
 @app.callback([Output('table', 'data', allow_duplicate=True),
@@ -632,10 +625,52 @@ def add_row(n_clicks, rows):
                            else variable_types[0] if col == 'Variable Type'
                            else '')
                      for col in df.columns})
-    return rows, 'Salve DOE Configuration!', 'Create DOE'
+    return rows, 'Save DOE Configuration!', 'Create DOE'
+
+
+@app.callback(Output('table', 'style_data_conditional', allow_duplicate=True),
+              Output('save-doe-btn', 'children', allow_duplicate=True),
+              Output('create-doe-btn', 'children', allow_duplicate=True),
+              Input('table', 'data'),
+              prevent_initial_call=True)
+def update_editability(rows):
+    # Verifica se alguma linha tem 'Variable Type' definido como 'Discrete'
+    conditions = []
+    for i, row in enumerate(rows):
+        if row['Variable Type'] == 'Discrete':
+            conditions.append({
+                'if': {'row_index': i, 'column_id': 'Step (If Variable is Discrete)'},
+                'backgroundColor': '#FAFAFA',
+                'border': '1px solid blue',
+                # Aqui você pode aplicar estilos adicionais se necessário
+            })
+    return conditions, 'Save DOE Configuration!', 'Create DOE'
+
+
+@app.callback(
+    Output('output-data-upload', 'children'),
+    Input('upload-results', 'contents'),
+    prevent_initial_call=True
+)
+def save_uploaded_file(contents):
+    if contents is None:
+        raise PreventUpdate
+
+    content_type, content_string = contents.split(',')
+
+    if 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' in content_type:
+        decoded = base64.b64decode(content_string)
+        # Salvando o arquivo diretamente no diretório especificado
+        with open('datasets/ODEs_Dataset.xlsx', 'wb') as f:
+            f.write(decoded)
+        return html.Div([
+            html.H6('File uploaded and saved successfully!')
+        ])
+    else:
+        return html.Div([
+            html.H6('Please upload a file in .xlsx format!')
+        ])
+
 
 if __name__ == '__main__':
     app.run_server(host='127.0.0.5', port=8080, debug=False)
-
-
-
