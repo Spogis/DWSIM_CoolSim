@@ -30,6 +30,8 @@ scikit-learn~=1.4.0
 joblib>=1.2.0
 h5py~=3.10.0
 keras-tuner~=1.4.7
-scipy>=1.13.0
+
+#OBS: Scipy não pode ser versão acima da 1.11.4 pois o Antivirus Bloqueia o scipy.stats
+scipy==1.11.4
 
 

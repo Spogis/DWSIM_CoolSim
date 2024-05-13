@@ -8,6 +8,7 @@ from doe.DOE import *
 from apps.DataAnalytics import *
 from apps.odes import *
 from apps.optimization import *
+from apps.ReactionConstants import *
 
 from layouts.layout_DOE import *
 from layouts.layout_parallel_chart import *
@@ -22,8 +23,6 @@ from layouts.layout_optimization import *
 from layouts.layout_solve_once import *
 from layouts.layout_validate import *
 from layouts.layout_upload_results import *
-
-from apps.ReactionConstants import *
 
 from keras_files.KerasMLP import *
 from keras_files.KerasPredict import *
