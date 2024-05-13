@@ -60,44 +60,44 @@ app.layout = html.Div([
     html.Div([
         dcc.Tabs(id='tabs', value='Simulate_Once', children=[
             dcc.Tab(label='Solve ODEs', value='Simulate_Once',
-                    style={'fontSize': '16px'},
-                    selected_style={'fontSize': '16px', 'backgroundColor': 'blue', 'color': 'white'}),
+                    style={'fontSize': '14px'},
+                    selected_style={'fontSize': '14px', 'backgroundColor': 'blue', 'color': 'white'}),
             dcc.Tab(label='DOE Setup', value='DOE',
-                    style={'fontSize': '16px'},
-                    selected_style={'fontSize': '16px', 'backgroundColor': 'blue', 'color': 'white'}),
+                    style={'fontSize': '14px'},
+                    selected_style={'fontSize': '14px', 'backgroundColor': 'blue', 'color': 'white'}),
             dcc.Tab(label='Run DOE', value='Simulate',
-                    style={'fontSize': '16px'},
-                    selected_style={'fontSize': '16px', 'backgroundColor': 'blue', 'color': 'white'}),
+                    style={'fontSize': '14px'},
+                    selected_style={'fontSize': '14px', 'backgroundColor': 'blue', 'color': 'white'}),
             dcc.Tab(label='Upload Results', value='Upload',
-                    style={'fontSize': '16px'},
-                    selected_style={'fontSize': '16px', 'backgroundColor': 'blue', 'color': 'white'}),
+                    style={'fontSize': '14px'},
+                    selected_style={'fontSize': '14px', 'backgroundColor': 'blue', 'color': 'white'}),
             dcc.Tab(label='EDA', value='Data_Analytics',
-                    style={'fontSize': '16px'},
-                    selected_style={'fontSize': '16px', 'backgroundColor': 'blue', 'color': 'white'}),
+                    style={'fontSize': '14px'},
+                    selected_style={'fontSize': '14px', 'backgroundColor': 'blue', 'color': 'white'}),
             dcc.Tab(label='Parallel Chart', value='Parallel_Chart',
-                    style={'fontSize': '16px'},
-                    selected_style={'fontSize': '16px', 'backgroundColor': 'blue', 'color': 'white'}),
+                    style={'fontSize': '14px'},
+                    selected_style={'fontSize': '14px', 'backgroundColor': 'blue', 'color': 'white'}),
             dcc.Tab(label='MLP Setup', value='MLP_Setup',
-                    style={'fontSize': '16px'},
-                    selected_style={'fontSize': '16px', 'backgroundColor': 'blue', 'color': 'white'}),
+                    style={'fontSize': '14px'},
+                    selected_style={'fontSize': '14px', 'backgroundColor': 'blue', 'color': 'white'}),
             dcc.Tab(label='Fast MLP', value='Fast_MLP_Training',
-                    style={'fontSize': '16px'},
-                    selected_style={'fontSize': '16px', 'backgroundColor': 'blue', 'color': 'white'}),
+                    style={'fontSize': '14px'},
+                    selected_style={'fontSize': '14px', 'backgroundColor': 'blue', 'color': 'white'}),
             dcc.Tab(label='Advanced MLP', value='Advanced_MLP_Training',
-                    style={'fontSize': '16px'},
-                    selected_style={'fontSize': '16px', 'backgroundColor': 'blue', 'color': 'white'}),
+                    style={'fontSize': '14px'},
+                    selected_style={'fontSize': '14px', 'backgroundColor': 'blue', 'color': 'white'}),
             dcc.Tab(label='MLP Prediction', value='MLP_Evaluation',
-                    style={'fontSize': '16px'},
-                    selected_style={'fontSize': '16px', 'backgroundColor': 'blue', 'color': 'white'}),
+                    style={'fontSize': '14px'},
+                    selected_style={'fontSize': '14px', 'backgroundColor': 'blue', 'color': 'white'}),
             dcc.Tab(label='MLP Test', value='MLP_Validation',
-                    style={'fontSize': '16px'},
-                    selected_style={'fontSize': '16px', 'backgroundColor': 'blue', 'color': 'white'}),
+                    style={'fontSize': '14px'},
+                    selected_style={'fontSize': '14px', 'backgroundColor': 'blue', 'color': 'white'}),
             dcc.Tab(label='Optimization', value='Optimization',
-                    style={'fontSize': '16px'},
-                    selected_style={'fontSize': '16px', 'backgroundColor': 'blue', 'color': 'white'}),
+                    style={'fontSize': '14px'},
+                    selected_style={'fontSize': '14px', 'backgroundColor': 'blue', 'color': 'white'}),
             dcc.Tab(label='About', value='About',
-                    style={'fontSize': '16px'},
-                    selected_style={'fontSize': '16px', 'backgroundColor': 'blue', 'color': 'white'}),
+                    style={'fontSize': '14px'},
+                    selected_style={'fontSize': '14px', 'backgroundColor': 'blue', 'color': 'white'}),
         ], style={'align': 'center', 'width': '100%', 'margin-left': 'auto', 'margin-right': 'auto'}),
     ]),
     dcc.Store(id='store-data'),
@@ -675,6 +675,17 @@ def save_uploaded_file(contents):
         return html.Div([
             html.H6('Please upload a file in .xlsx format!')
         ])
+
+
+@app.callback(
+    Output("download-excel", "data"),
+    Input("btn-stat-download", "n_clicks"),
+    prevent_initial_call=True
+)
+def download_excel(n_clicks):
+    # Caminho para o arquivo Excel existente
+    path_to_excel = "datasets/Parallel_Filter_Stats.xlsx"
+    return dcc.send_file(path_to_excel)
 
 
 if __name__ == '__main__':
