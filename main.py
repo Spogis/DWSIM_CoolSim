@@ -688,5 +688,17 @@ def download_excel(n_clicks):
     return dcc.send_file(path_to_excel)
 
 
+@app.callback(Output('graph-parcoords', 'figure'),
+              Input('table_data_analysis_min_max', 'data'),
+              State('activefilters', 'data'))
+def update_figure(rows, stored_filters):
+    filters = {col: [float(rows[1][col]), float(rows[0][col])] for col in rows[0] if col in rows[1]}
+    df = pd.read_excel('datasets/ODEs_Dataset.xlsx')
+    if 'index' in df.columns:
+        df = df.drop(columns=['index'])
+    fig = update_graph_parcoords_min_max(df, filters)
+    return fig
+
+
 if __name__ == '__main__':
     app.run_server(host='127.0.0.5', port=8080, debug=False)
