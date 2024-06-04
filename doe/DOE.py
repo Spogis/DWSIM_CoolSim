@@ -144,7 +144,7 @@ def FullFactorial():
 def Run_DOE(filename, NumberOfSimulations):
     UpdateNaNValues(filename)
     LatinHypercube(NumberOfSimulations)
-    FullFactorial()
+    #FullFactorial()
 
 
 

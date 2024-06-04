@@ -59,10 +59,15 @@ def parallel_chart():
 
         html.Br(),
         dash_table.DataTable(id='table_data_analysis',
-                             columns=[{'id': 'index', 'name': 'index'}] + [{'id': i, 'name': i} for i in
-                                                                           df.columns],
-                             style_table={'overflowX': 'scroll'}),
+                             columns=[{'id': 'index', 'name': 'index'}] +
+                                     [{'id': i, 'name': i, 'type': 'numeric', 'format': Format(precision=4,
+                                                                                               scheme=Scheme.fixed)}
+                                      for i in df.columns],
+                             style_table={'overflowX': 'scroll'},
+                             style_cell={'textAlign': 'center'}),
+
         dcc.Store(id='activefilters', data={})
     ])
 
     return layout
+
