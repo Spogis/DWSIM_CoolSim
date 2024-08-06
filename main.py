@@ -102,9 +102,13 @@ app.layout = html.Div([
                 dcc.Tab(label='About', value='About',
                         style={'fontSize': '14px', 'width': '200px', 'padding': '10px', 'border': '1px solid #ccc', 'border-radius': '5px', 'margin-bottom': '5px', 'background-color': '#f9f9f9'},
                         selected_style={'fontSize': '14px', 'backgroundColor': '#007BFF', 'color': 'white', 'width': '200px', 'padding': '10px', 'border': '1px solid #007BFF', 'border-radius': '5px', 'margin-bottom': '5px', 'box-shadow': '0px 4px 8px rgba(0, 0, 0, 0.1)'}),
-            ], style={'display': 'flex', 'flexDirection': 'column', 'height': '100vh', 'width': '220px', 'border-right': '1px solid #ccc', 'padding': '10px', 'position': 'fixed', 'margin-top': '50px', 'left': '0', 'z-index': '999'}),
+            ], style={'display': 'flex', 'flexDirection': 'column', 'height': '100vh', 'width': '220px',
+                      'padding': '10px', 'position': 'fixed', 'margin-top': '50px', 'left': '0', 'z-index': '999'}),
         ], style={'display': 'flex'}),
-        html.Div(id='tabs-content', style={'flex': 1, 'padding': '20px', 'border-radius': '10px', 'box-shadow': '0px 4px 8px rgba(0, 0, 0, 0.1)', 'margin-left': '220px', 'margin-top': '50px', 'overflow-y': 'auto', 'height': 'calc(100vh - 100px)'})  # Ajuste para criar espaço para o conteúdo
+        html.Div(id='tabs-content',
+                 style={'flex': 1, 'padding': '20px', 'border': '1px solid #ccc', 'border-radius': '10px',
+                        'box-shadow': '0px 4px 8px rgba(0, 0, 0, 0.1)', 'margin-left': '220px', 'margin-top': '50px',
+                        'overflow-y': 'auto', 'height': 'calc(100vh - 100px)'})
     ], style={'display': 'flex'}),
     dcc.Store(id='store-data'),
 ])
