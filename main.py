@@ -44,7 +44,7 @@ drop_options = initial_columns()
 # Inicializa o app Dash
 app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
 
-app.title = "ARGET ATRP"
+app.title = "PolyLab Vision"
 
 server = app.server
 
@@ -55,12 +55,13 @@ app.layout = html.Div([
     html.Br(),
     html.Div([
         html.Img(src='assets/logo.png',
-                 style={'width': '90%', 'max-width': '2000px', 'height': 'auto', 'margin-left': 'auto',
-                        'margin-right': 'auto'}),
+                 style={'width': '100%', 'max-width': '2000px', 'height': 'auto', 'margin-left': 'auto',
+                        'margin-right': 'auto', 'position': 'fixed', 'top': '0', 'left': '0', 'z-index': '1000', 'margin-bottom': '50px'}),
     ], style={'text-align': 'center', 'margin-bottom': '10px'}),
 
     html.Div([
         html.Div([
+            html.Br(),  # Adiciona um espaço entre o logo e as abas
             dcc.Tabs(id='tabs', value='Simulate_Once', children=[
                 dcc.Tab(label='Solve ODEs', value='Simulate_Once',
                         style={'fontSize': '14px', 'width': '200px', 'padding': '10px', 'border': '1px solid #ccc', 'border-radius': '5px', 'margin-bottom': '5px', 'background-color': '#f9f9f9'},
@@ -104,7 +105,7 @@ app.layout = html.Div([
             ], style={'display': 'flex', 'flexDirection': 'column', 'height': '100vh', 'width': '220px', 'border-right': '1px solid #ccc', 'padding': '10px'}),
         ], style={'display': 'flex'}),
         html.Div(id='tabs-content', style={'flex': 1, 'padding': '20px', 'border-radius': '10px', 'box-shadow': '0px 4px 8px rgba(0, 0, 0, 0.1)'})
-    ], style={'display': 'flex'}),
+    ], style={'display': 'flex', 'margin-top': '50px'}),  # Ajuste para criar espaço acima das abas
     dcc.Store(id='store-data'),
 ])
 
