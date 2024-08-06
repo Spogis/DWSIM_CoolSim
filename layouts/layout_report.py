@@ -24,7 +24,7 @@ def layout_report():
 
         html.Div([
             html.Br(),
-            html.Iframe(id='html-viewer', src="assets/relatorio_analise.html", width='80%', height='600'),
+            html.Iframe(id='html-viewer', src="assets/relatorio_analise.html", width='100%', height='600'),
         ], style={'display': 'flex', 'justifyContent': 'center', 'alignItems': 'center', 'marginBottom': '10px'}),
     ])
 
