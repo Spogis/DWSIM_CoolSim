@@ -2,6 +2,7 @@ import re
 import time
 from datetime import datetime
 import base64
+from PIL import Image
 from dash.exceptions import PreventUpdate
 
 from doe.DOE import *
@@ -451,6 +452,8 @@ def OPTMLP(n_clicks):
               Output('discharge_temperature_value', 'value'),
               Output('refrigerant_mass_flow_value', 'value'),
               Output("loading-output4", "children", allow_duplicate=True),
+              Output('output-dwsim-fig', 'figure', allow_duplicate=True),
+              Output('output-dwsim-fig', 'style', allow_duplicate=True),
               Input('dwsim-once-btn', 'n_clicks'),
               State('evaporator_temperature_value', 'value'),
               State('condenser_temperature_value', 'value'),
@@ -473,10 +476,65 @@ def simulate(n_clicks, evaporator_temperature_value, condenser_temperature_value
         mass_flow = "{:1.2f}".format(mass_flow)
         electric_current = "{:1.2f}".format(electric_current)
 
-        return energy, electric_current, discharge_temperature, mass_flow, ""
+        # Caminho da imagem com identificador único
+        image_filename = f'assets/pfd.png?t={time.time()}'
 
-    return None, None, None, None, ""
+        # Criar uma nova figura a cada execução
+        fig = go.Figure()
 
+        # Constantes
+        img_width = 1024
+        img_height = 768
+        scale_factor = 1.2
+
+        # Adicionar um traço invisível para auxiliar na lógica de redimensionamento automático
+        fig.add_trace(
+            go.Scatter(
+                x=[0, img_width * scale_factor],
+                y=[0, img_height * scale_factor],
+                mode="markers",
+            )
+        )
+
+        # Configurar os eixos
+        fig.update_xaxes(
+            visible=False,
+            range=[0, img_width * scale_factor]
+        )
+
+        fig.update_yaxes(
+            visible=False,
+            range=[0, img_height * scale_factor],
+            scaleanchor="x"
+        )
+
+        # Adicionar a imagem
+        fig.add_layout_image(
+            dict(
+                x=0,
+                sizex=img_width * scale_factor,
+                y=img_height * scale_factor,
+                sizey=img_height * scale_factor,
+                xref="x",
+                yref="y",
+                opacity=1.0,
+                layer="below",
+                sizing="stretch",
+                source=image_filename)
+        )
+
+        # Configurar o layout
+        fig.update_layout(
+            width=img_width * scale_factor,
+            height=img_height * scale_factor,
+            margin={"l": 0, "r": 0, "t": 0, "b": 0},
+        )
+
+        # Retornar os valores e a figura
+        return energy, electric_current, discharge_temperature, mass_flow, "", fig, {'display': 'block'}
+
+    # Caso nenhum clique tenha ocorrido
+    return None, None, None, None, "", None, {'display': 'none'}
 
 @app.callback([Output('validation-btn', 'children', allow_duplicate=True),
                Output("progress2", "value", allow_duplicate=True),

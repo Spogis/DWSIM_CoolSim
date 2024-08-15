@@ -1,6 +1,7 @@
 import pandas as pd
 import numpy as np
 import time
+from datetime import datetime, timedelta
 
 import io
 from scipy.integrate import solve_ivp
@@ -51,6 +52,16 @@ def Simulate_DWSIM_DOE():
 
         estimated_time = ((fim - inicio)/(i+1))*(numberofsimulations-(i+1))
         print(f"Estimated time for DOE completion: {estimated_time/60:.1f} min")
+
+        # Hora atual
+        hora_atual = datetime.now()
+
+        # Calcula a hora estimada de término
+        hora_termino = hora_atual + timedelta(minutes=estimated_time/60)
+
+        # Imprime a hora estimada de término
+        print(f"Estimated completion time: {hora_termino.strftime('%H:%M:%S')}")
+
 
         designdata = np.array([evaporator_temperature_value,
                                condenser_temperature_value,

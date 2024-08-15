@@ -96,8 +96,7 @@ def layout_solve_once():
                     disabled=True,
                     style={'width': '80px', 'textAlign': 'center', 'fontWeight': 'bold'}
                 ),
-
-            ], style={'display': 'flex', 'justifyContent': 'center', 'alignItems': 'center', 'gap': '20px'}),
+                ], style={'display': 'flex', 'justifyContent': 'center', 'alignItems': 'center', 'gap': '20px'}),
         ], style={'padding': '20px', 'margin': 'auto', 'width': '1200px', 'box-shadow': '0px 0px 10px #ccc',
                   'border-radius': '15px'}),
 
@@ -110,6 +109,16 @@ def layout_solve_once():
 
         html.Br(),
         dbc.Spinner(html.Div(id="loading-output4"), spinner_style={"marginTop": "40px"}),
+
+        html.Div([
+            html.Br(),
+            html.Br(),
+            dcc.Graph(id='output-dwsim-fig', style={'display': 'none'})
+        ], style={'padding': '20px', 'margin': 'auto', 'width': '1200px',
+                  'display': 'flex', 'justifyContent': 'center',
+                  'alignItems': 'center'}),
+
+
 
     ], style={'textAlign': 'center'})
 
