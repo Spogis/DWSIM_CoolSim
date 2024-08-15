@@ -9,6 +9,8 @@ from apps.DataAnalytics import *
 from apps.odes import *
 from apps.optimization import *
 from apps.ReactionConstants import *
+from apps.run_DWSIM import *
+from apps.print_flowsheet import *
 
 from layouts.layout_DOE import *
 from layouts.layout_parallel_chart import *
@@ -36,15 +38,15 @@ with open('assets/status.txt', 'w') as file:
     file.write(str(0.0))
 
 MLP_Type = "Direct MLP"
-input_columns = ['POX/C', 'C/A', 'POX/M']
-output_columns = ['X', 'PDI', 'Mn']
+input_columns = ['Evaporator Temperature', 'Condenser Temperature', 'Adiabatic Efficiency']
+output_columns = ['Compressor Energy', 'Electric Current', 'Discharge Temperature', 'Refrigerant Mass Flow']
 drop_options = initial_columns()
 
 
 # Inicializa o app Dash
 app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
 
-app.title = "PolyLab Vision"
+app.title = "DWSIM(IA)"
 
 server = app.server
 
@@ -63,7 +65,7 @@ app.layout = html.Div([
         html.Div([
             html.Br(),  # Adiciona um espaço entre o logo e as abas
             dcc.Tabs(id='tabs', value='Simulate_Once', children=[
-                dcc.Tab(label='Solve ODEs', value='Simulate_Once',
+                dcc.Tab(label='Solve DWSIM', value='Simulate_Once',
                         style={'fontSize': '14px', 'width': '200px', 'padding': '10px', 'border': '1px solid #ccc',
                                'border-radius': '5px', 'margin-bottom': '5px', 'background-color': '#f9f9f9'},
                         selected_style={'fontSize': '14px', 'backgroundColor': '#007BFF', 'color': 'white',
@@ -86,11 +88,12 @@ app.layout = html.Div([
                                         'box-shadow': '0px 4px 8px rgba(0, 0, 0, 0.1)'}),
                 dcc.Tab(label='Upload Results', value='Upload',
                         style={'fontSize': '14px', 'width': '200px', 'padding': '10px', 'border': '1px solid #ccc',
-                               'border-radius': '5px', 'margin-bottom': '5px', 'background-color': '#f9f9f9'},
+                               'border-radius': '5px', 'margin-bottom': '20px', 'background-color': '#f9f9f9'},
                         selected_style={'fontSize': '14px', 'backgroundColor': '#007BFF', 'color': 'white',
                                         'width': '200px', 'padding': '10px', 'border': '1px solid #007BFF',
-                                        'border-radius': '5px', 'margin-bottom': '5px',
+                                        'border-radius': '5px', 'margin-bottom': '20px',
                                         'box-shadow': '0px 4px 8px rgba(0, 0, 0, 0.1)'}),
+
                 dcc.Tab(label='EDA', value='Data_Analytics',
                         style={'fontSize': '14px', 'width': '200px', 'padding': '10px', 'border': '1px solid #ccc',
                                'border-radius': '5px', 'margin-bottom': '5px', 'background-color': '#f9f9f9'},
@@ -100,11 +103,13 @@ app.layout = html.Div([
                                         'box-shadow': '0px 4px 8px rgba(0, 0, 0, 0.1)'}),
                 dcc.Tab(label='Parallel Chart', value='Parallel_Chart',
                         style={'fontSize': '14px', 'width': '200px', 'padding': '10px', 'border': '1px solid #ccc',
-                               'border-radius': '5px', 'margin-bottom': '5px', 'background-color': '#f9f9f9'},
+                               'border-radius': '5px', 'margin-bottom': '20px', 'background-color': '#f9f9f9'},
                         selected_style={'fontSize': '14px', 'backgroundColor': '#007BFF', 'color': 'white',
                                         'width': '200px', 'padding': '10px', 'border': '1px solid #007BFF',
-                                        'border-radius': '5px', 'margin-bottom': '5px',
+                                        'border-radius': '5px', 'margin-bottom': '20px',
                                         'box-shadow': '0px 4px 8px rgba(0, 0, 0, 0.1)'}),
+
+
                 dcc.Tab(label='MLP Setup', value='MLP_Setup',
                         style={'fontSize': '14px', 'width': '200px', 'padding': '10px', 'border': '1px solid #ccc',
                                'border-radius': '5px', 'margin-bottom': '5px', 'background-color': '#f9f9f9'},
@@ -128,25 +133,28 @@ app.layout = html.Div([
                                         'box-shadow': '0px 4px 8px rgba(0, 0, 0, 0.1)'}),
                 dcc.Tab(label='MLP Prediction', value='MLP_Evaluation',
                         style={'fontSize': '14px', 'width': '200px', 'padding': '10px', 'border': '1px solid #ccc',
-                               'border-radius': '5px', 'margin-bottom': '5px', 'background-color': '#f9f9f9'},
+                               'border-radius': '5px', 'margin-bottom': '20px', 'background-color': '#f9f9f9'},
                         selected_style={'fontSize': '14px', 'backgroundColor': '#007BFF', 'color': 'white',
                                         'width': '200px', 'padding': '10px', 'border': '1px solid #007BFF',
-                                        'border-radius': '5px', 'margin-bottom': '5px',
+                                        'border-radius': '5px', 'margin-bottom': '20px',
                                         'box-shadow': '0px 4px 8px rgba(0, 0, 0, 0.1)'}),
-                dcc.Tab(label='MLP Test', value='MLP_Validation',
-                        style={'fontSize': '14px', 'width': '200px', 'padding': '10px', 'border': '1px solid #ccc',
-                               'border-radius': '5px', 'margin-bottom': '5px', 'background-color': '#f9f9f9'},
-                        selected_style={'fontSize': '14px', 'backgroundColor': '#007BFF', 'color': 'white',
-                                        'width': '200px', 'padding': '10px', 'border': '1px solid #007BFF',
-                                        'border-radius': '5px', 'margin-bottom': '5px',
-                                        'box-shadow': '0px 4px 8px rgba(0, 0, 0, 0.1)'}),
-                dcc.Tab(label='Optimization', value='Optimization',
-                        style={'fontSize': '14px', 'width': '200px', 'padding': '10px', 'border': '1px solid #ccc',
-                               'border-radius': '5px', 'margin-bottom': '5px', 'background-color': '#f9f9f9'},
-                        selected_style={'fontSize': '14px', 'backgroundColor': '#007BFF', 'color': 'white',
-                                        'width': '200px', 'padding': '10px', 'border': '1px solid #007BFF',
-                                        'border-radius': '5px', 'margin-bottom': '5px',
-                                        'box-shadow': '0px 4px 8px rgba(0, 0, 0, 0.1)'}),
+
+                # dcc.Tab(label='MLP Test', value='MLP_Validation',
+                #         style={'fontSize': '14px', 'width': '200px', 'padding': '10px', 'border': '1px solid #ccc',
+                #                'border-radius': '5px', 'margin-bottom': '20px', 'background-color': '#f9f9f9'},
+                #         selected_style={'fontSize': '14px', 'backgroundColor': '#007BFF', 'color': 'white',
+                #                         'width': '200px', 'padding': '10px', 'border': '1px solid #007BFF',
+                #                         'border-radius': '5px', 'margin-bottom': '20px',
+                #                         'box-shadow': '0px 4px 8px rgba(0, 0, 0, 0.1)'}),
+
+                # dcc.Tab(label='Optimization', value='Optimization',
+                #         style={'fontSize': '14px', 'width': '200px', 'padding': '10px', 'border': '1px solid #ccc',
+                #                'border-radius': '5px', 'margin-bottom': '20px', 'background-color': '#f9f9f9'},
+                #         selected_style={'fontSize': '14px', 'backgroundColor': '#007BFF', 'color': 'white',
+                #                         'width': '200px', 'padding': '10px', 'border': '1px solid #007BFF',
+                #                         'border-radius': '5px', 'margin-bottom': '20px',
+                #                         'box-shadow': '0px 4px 8px rgba(0, 0, 0, 0.1)'}),
+
                 dcc.Tab(label='About', value='About',
                         style={'fontSize': '14px', 'width': '200px', 'padding': '10px', 'border': '1px solid #ccc',
                                'border-radius': '5px', 'margin-bottom': '5px', 'background-color': '#f9f9f9'},
@@ -173,9 +181,9 @@ def update_tab_content(selected_tab):
     if selected_tab == 'DOE':
         return layout_DOE()
     elif selected_tab == 'Simulate_Once':
-        return layout_solve_once(M, MWm, Hours)
+        return layout_solve_once()
     elif selected_tab == 'Simulate':
-        return layout_simulate(M, MWm, Hours)
+        return layout_simulate()
     elif selected_tab == 'Upload':
         return layout_upload_results()
     elif selected_tab == 'Data_Analytics':
@@ -298,10 +306,7 @@ def update_output(n_clicks):
               Input('simulation-btn', 'n_clicks'),
               prevent_initial_call=True)
 def simulate(n_clicks):
-    global Hours, MWm, M
-    t = None
-    y = None
-    SimulateODEs(Hours, MWm, M)
+    Simulate_DWSIM_DOE()
     with open('assets/status.txt', 'w') as file:
         file.write(str(100))
     return "Simulation Finished!", 100, 100, ""
@@ -515,41 +520,36 @@ def run_opt(n_clicks, input_value):
     return predicted_str, exec_time, ""
 
 
-@app.callback(Output('graph1', 'figure'),
-              Output('graph1', 'style'),
-              Output('graph2', 'figure'),
-              Output('graph2', 'style'),
-              Output('graph3', 'figure'),
-              Output('graph3', 'style'),
-              Output('graph4', 'figure'),
-              Output('graph4', 'style'),
-              Output('graph5', 'figure'),
-              Output('graph5', 'style'),
-              Output('graph6', 'figure'),
-              Output('graph6', 'style'),
-              Output('final_X_value', 'value'),
-              Output('final_PDI_value', 'value'),
-              Output('final_Mn_value', 'value'),
+@app.callback(Output('compressor_energy_value', 'value'),
+              Output('electric_current_value', 'value'),
+              Output('discharge_temperature_value', 'value'),
+              Output('refrigerant_mass_flow_value', 'value'),
               Output("loading-output4", "children", allow_duplicate=True),
-              Input('simulation-once-btn', 'n_clicks'),
-              State('reaction_time_value', 'value'),
-              State('styrene_monomer_value', 'value'),
-              State('monomer_molar_mass_value', 'value'),
-              State('POX_M_value', 'value'),
-              State('C_A_value', 'value'),
-              State('POX_C_value', 'value'),
+              Input('dwsim-once-btn', 'n_clicks'),
+              State('evaporator_temperature_value', 'value'),
+              State('condenser_temperature_value', 'value'),
+              State('adiabatic_efficiency_value', 'value'),
               prevent_initial_call=True)
-def simulate(n_clicks, reaction_time_value_2, styrene_monomer_value_2, monomer_molar_mass_value_2, POX_M_value, C_A_value, POX_C_value):
+def simulate(n_clicks, evaporator_temperature_value, condenser_temperature_value, adiabatic_efficiency_value):
     if n_clicks > 0:
-        fig1, fig2, fig3, fig4, fig5, fig6, final_X, final_PDI, final_Mn = SimulateODEs_Once(reaction_time_value_2,
-                                                                                             monomer_molar_mass_value_2,
-                                                                                             styrene_monomer_value_2,
-                                                                                             POX_M_value, C_A_value, POX_C_value)
-        style = {'display': 'block'}
-        return fig1, style, fig2, style, fig3, style, fig4, style, fig5, style, fig6, style, final_X, final_PDI, final_Mn, ""
+        energy, discharge_temperature, mass_flow = run_DWSIM(evaporator_temperature=evaporator_temperature_value,
+                                                             condenser_temperature=condenser_temperature_value,
+                                                             adiabatic_efficiency=adiabatic_efficiency_value,
+                                                             picture='Yes')
 
-    style = {'display': 'none'}
-    return None, style, None, style, None, style, None, style, None, style, None, style, None, None, None, ""
+        energy = energy * 1000
+        discharge_temperature = discharge_temperature - 273.15
+        mass_flow = mass_flow * 60
+        electric_current = energy / 220
+
+        energy = "{:1.2f}".format(energy)
+        discharge_temperature = "{:1.2f}".format(discharge_temperature)
+        mass_flow = "{:1.2f}".format(mass_flow)
+        electric_current = "{:1.2f}".format(electric_current)
+
+        return energy, electric_current, discharge_temperature, mass_flow, ""
+
+    return None, None, None, None, ""
 
 
 @app.callback([Output('validation-btn', 'children', allow_duplicate=True),
@@ -638,13 +638,13 @@ def change_MLP_setup(MLP_setup_selector):
 
     if MLP_setup_selector == "Direct MLP":
         MLP_Type = "Direct MLP"
-        input_columns = ['POX/C', 'C/A', 'POX/M']
-        output_columns = ['X', 'PDI', 'Mn']
+        input_columns = ['Evaporator Temperature', 'Condenser Temperature', 'Adiabatic Efficiency']
+        output_columns = ['Compressor Energy', 'Electric Current', 'Discharge Temperature', 'Refrigerant Mass Flow']
         return input_columns, output_columns
     elif MLP_setup_selector == "Inverse MLP":
         MLP_Type = "Inverse MLP"
-        input_columns =['X', 'PDI', 'Mn']
-        output_columns = ['POX/C', 'C/A', 'POX/M']
+        input_columns = ['Compressor Energy', 'Electric Current', 'Discharge Temperature', 'Refrigerant Mass Flow']
+        output_columns = ['Evaporator Temperature', 'Condenser Temperature', 'Adiabatic Efficiency']
         return input_columns, output_columns
     else:
         MLP_Type = "Custom MLP"

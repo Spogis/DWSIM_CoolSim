@@ -5,47 +5,13 @@ from dash.dash_table.Format import Format, Scheme
 import dash_bootstrap_components as dbc
 
 
-def layout_simulate(M, MWm, Hours):
+def layout_simulate():
     layout = html.Div([
         html.Br(),
 
         html.Div([
-
-            html.Div("Reaction Time (h):", id="tooltip-reaction-time",
-                     style={'width': '150px', 'textAlign': 'center', 'paddingRight': '10px', 'fontWeight': 'bold'}),
-
-            dcc.Input(
-                id="reaction_time_value",
-                type='number',
-                value=Hours,
-                disabled=False,
-                style={'width': '80px', 'textAlign': 'center', 'fontWeight': 'bold'}
-            ),
-
-            html.Div("Styrene Monomer Concentration [mol.L-1]):",
-                     style={'width': '150px', 'textAlign': 'center', 'paddingRight': '10px', 'fontWeight': 'bold'}),
-            dcc.Input(
-                id="styrene_monomer_value",
-                type='number',
-                value=M,
-                disabled=False,
-                style={'width': '80px', 'textAlign': 'center', 'fontWeight': 'bold'}
-            ),
-
-            html.Div("Monomer Molar Mass [g⋅mol-1]:",
-                     style={'width': '150px', 'textAlign': 'center', 'paddingRight': '10px', 'fontWeight': 'bold'}),
-            dcc.Input(
-                id="monomer_molar_mass_value",
-                type='number',
-                value=MWm,
-                disabled=False,
-                style={'width': '80px', 'textAlign': 'center', 'fontWeight': 'bold'}
-            ),
-        ], style={'display': 'flex', 'justifyContent': 'center', 'alignItems': 'center', 'gap': '20px'}),
-
-        html.Div([
             html.Br(),
-            html.Button('Run Simulations (ODE Solver)!', id='simulation-btn', n_clicks=0,
+            html.Button('Run Simulations (DOE)!', id='simulation-btn', n_clicks=0,
                         style={'backgroundColor': 'orange', 'color': 'white', 'fontWeight': 'bold',
                                'fontSize': '20px'}),
         ], style={'textAlign': 'center'}),

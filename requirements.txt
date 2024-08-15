@@ -33,3 +33,6 @@ keras-tuner~=1.4.7
 
 #OBS: Scipy não pode ser versão acima da 1.11.4 pois o Antivirus Bloqueia o scipy.stats
 scipy==1.11.4
+
+#DWSIM Requirements
+pythonnet~=3.0.3

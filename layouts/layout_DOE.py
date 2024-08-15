@@ -76,7 +76,7 @@ def layout_DOE():
             style_header={
                 'textAlign': 'center'  # Centraliza o texto no cabeçalho também
             },
-            row_deletable=True,
+            row_deletable=False,
             dropdown={
                 'Variable Type': {
                     'options': [
@@ -96,9 +96,9 @@ def layout_DOE():
 
         html.Div([
             html.Br(),
-            html.Button('Add new Line', id='adding-rows-btn', n_clicks=0,
-                        style={'width': '400px', 'backgroundColor': 'green', 'color': 'white',
-                               'fontWeight': 'bold', 'fontSize': '20px', 'marginRight': '50px'}),
+            # html.Button('Add new Line', id='adding-rows-btn', n_clicks=0,
+            #             style={'width': '400px', 'backgroundColor': 'green', 'color': 'white',
+            #                    'fontWeight': 'bold', 'fontSize': '20px', 'marginRight': '50px'}),
 
             html.Button('Save DOE Configuration!', id='save-doe-btn', n_clicks=0,
                         style={'width': '400px', 'backgroundColor': 'green', 'color': 'white',

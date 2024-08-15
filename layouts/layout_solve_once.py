@@ -6,7 +6,7 @@ from dash.dash_table.Format import Format, Scheme
 import dash_bootstrap_components as dbc
 
 
-def layout_solve_once(M, MWm, Hours):
+def layout_solve_once():
     layout = html.Div([
         html.Br(),
         html.Div([
@@ -14,179 +14,102 @@ def layout_solve_once(M, MWm, Hours):
                 style={'display': 'flex', 'justifyContent': 'center', 'alignItems': 'center', 'fontWeight': 'bold'}),
 
         html.Div([
-            html.Div("Reaction Time (h):",
+            html.Div("Evaporator Temperature [C]:",
                      style={'width': '150px', 'textAlign': 'center', 'paddingRight': '10px', 'fontWeight': 'bold'}),
             dcc.Input(
-                id="reaction_time_value",
+                id="evaporator_temperature_value",
                 type='number',
-                value=Hours,
+                value=16,
                 disabled=False,
                 style={'width': '80px', 'textAlign': 'center', 'fontWeight': 'bold'}
             ),
 
-            html.Div("Styrene Monomer Concentration [mol⋅L-1]:",
+            html.Div("Condenser Temperature [C]:",
                      style={'width': '150px', 'textAlign': 'center', 'paddingRight': '10px', 'fontWeight': 'bold'}),
             dcc.Input(
-                id="styrene_monomer_value",
+                id="condenser_temperature_value",
                 type='number',
-                value=M,
+                value=50,
                 disabled=False,
                 style={'width': '80px', 'textAlign': 'center', 'fontWeight': 'bold'}
             ),
 
-            html.Div("Monomer Molar Mass [g⋅mol-1]:",
+            html.Div("Adiabatic Efficiency [%]:",
                      style={'width': '150px', 'textAlign': 'center', 'paddingRight': '10px', 'fontWeight': 'bold'}),
             dcc.Input(
-                id="monomer_molar_mass_value",
+                id="adiabatic_efficiency_value",
                 type='number',
-                value=MWm,
+                value=75,
                 disabled=False,
                 style={'width': '80px', 'textAlign': 'center', 'fontWeight': 'bold'}
             ),
-        ], style={'display': 'flex', 'justifyContent': 'center', 'alignItems': 'center', 'gap': '20px'}),
-        ], style={'padding': '20px', 'margin': 'auto', 'width': '800px', 'box-shadow': '0px 0px 10px #ccc',
-              'border-radius': '15px'}),
-
-        html.Br(),
-        html.Div([
-        html.H2("Initial Conditions:",
-                style={'display': 'flex', 'justifyContent': 'center', 'alignItems': 'center', 'fontWeight': 'bold'}),
-
-        html.Div([
-            html.Div("P0X/C:", id="tooltip-pox-c",
-                     style={'width': '150px', 'textAlign': 'center', 'paddingRight': '10px', 'fontWeight': 'bold'}),
-
-            dbc.Tooltip(
-                "P0X/C  = Initiator Concentration (P0X) / Active Catalyst Concentration (C)",
-                target="tooltip-pox-c",
-                placement="top"
-            ),
-
-            dcc.Input(
-                id="POX_C_value",
-                type='number',
-                value=100.0,
-                disabled=False,
-                style={'width': '80px', 'textAlign': 'center', 'fontWeight': 'bold'}
-            ),
-
-            html.Div("C/A:", id="tooltip-c-a",
-                     style={'width': '150px', 'textAlign': 'center', 'paddingRight': '10px', 'fontWeight': 'bold'}),
-
-            dbc.Tooltip(
-                "C/A  = Active Catalyst Concentration (C) / Reducing agent in reduced form Concentration (A)",
-                target="tooltip-c-a",
-                placement="top"
-            ),
-
-            dcc.Input(
-                id="C_A_value",
-                type='number',
-                value=0.1,
-                disabled=False,
-                style={'width': '80px', 'textAlign': 'center', 'fontWeight': 'bold'}
-            ),
-
-            html.Div("POX/M:", id="tooltip-pox-m",
-                     style={'width': '150px', 'textAlign': 'center', 'paddingRight': '10px', 'fontWeight': 'bold'}),
-
-            dbc.Tooltip(
-                "POX/M = Initiator Concentration (P0X)  / Monomer Concentration (M)",
-                target="tooltip-pox-m",
-                placement="top"
-            ),
-
-            dcc.Input(
-                id="POX_M_value",
-                type='number',
-                value=0.001,
-                disabled=False,
-                style={'width': '80px', 'textAlign': 'center', 'fontWeight': 'bold'}
-            ),
-        ], style={'display': 'flex', 'justifyContent': 'center', 'alignItems': 'center', 'gap': '20px'}),
+            ], style={'display': 'flex', 'justifyContent': 'center', 'alignItems': 'center', 'gap': '20px'}),
         ], style={'padding': '20px', 'margin': 'auto', 'width': '800px', 'box-shadow': '0px 0px 10px #ccc',
                   'border-radius': '15px'}),
 
         html.Br(),
         html.Div([
-        html.H2("Final Reaction Values:",
-                style={'display': 'flex', 'justifyContent': 'center', 'alignItems': 'center', 'fontWeight': 'bold'}),
+            html.H2("DWSIM Simulation Values:",
+                    style={'display': 'flex', 'justifyContent': 'center', 'alignItems': 'center', 'fontWeight': 'bold'}),
 
-        html.Div([
-            html.Div("X:", id="tooltip-x",
-                     style={'width': '150px', 'textAlign': 'center', 'paddingRight': '10px', 'fontWeight': 'bold'}),
+            html.Div([
+                html.Div("Compressor Energy [W]:", id="tooltip-x",
+                         style={'width': '150px', 'textAlign': 'center', 'paddingRight': '10px', 'fontWeight': 'bold'}),
 
-            dbc.Tooltip(
-                "X = Monomer conversion",
-                target="tooltip-x",
-                placement="top"
-            ),
+                dcc.Input(
+                    id="compressor_energy_value",
+                    type='text',
+                    value="",
+                    disabled=True,
+                    style={'width': '80px', 'textAlign': 'center', 'fontWeight': 'bold'}
+                ),
 
-            dcc.Input(
-                id="final_X_value",
-                type='number',
-                value="",
-                disabled=True,
-                style={'width': '80px', 'textAlign': 'center', 'fontWeight': 'bold'}
-            ),
+                html.Div("Electric Current [A]:", id="tooltip-pdi",
+                         style={'width': '150px', 'textAlign': 'center', 'paddingRight': '10px', 'fontWeight': 'bold'}),
 
-            html.Div("PDI:", id="tooltip-pdi",
-                     style={'width': '150px', 'textAlign': 'center', 'paddingRight': '10px', 'fontWeight': 'bold'}),
+                dcc.Input(
+                    id="electric_current_value",
+                    type='text',
+                    value="",
+                    disabled=True,
+                    style={'width': '80px', 'textAlign': 'center', 'fontWeight': 'bold'}
+                ),
 
-            dbc.Tooltip(
-                "PDI = Polydispersity",
-                target="tooltip-pdi",
-                placement="top"
-            ),
+                html.Div("Discharge Temperature [C]:", id="tooltip-mn",
+                         style={'width': '150px', 'textAlign': 'center', 'paddingRight': '10px', 'fontWeight': 'bold'}),
 
-            dcc.Input(
-                id="final_PDI_value",
-                type='number',
-                value="",
-                disabled=True,
-                style={'width': '80px', 'textAlign': 'center', 'fontWeight': 'bold'}
-            ),
+                dcc.Input(
+                    id="discharge_temperature_value",
+                    type='text',
+                    value="",
+                    disabled=True,
+                    style={'width': '80px', 'textAlign': 'center', 'fontWeight': 'bold'}
+                ),
 
-            html.Div("Mn [g⋅mol-1]:", id="tooltip-mn",
-                     style={'width': '150px', 'textAlign': 'center', 'paddingRight': '10px', 'fontWeight': 'bold'}),
+                html.Div("Refrigerant Mass Flow [kg/min]:", id="tooltip-mn",
+                         style={'width': '150px', 'textAlign': 'center', 'paddingRight': '10px', 'fontWeight': 'bold'}),
 
-            dbc.Tooltip(
-                "Mn = Number-average molar mass",
-                target="tooltip-mn",
-                placement="top"
-            ),
+                dcc.Input(
+                    id="refrigerant_mass_flow_value",
+                    type='text',
+                    value="",
+                    disabled=True,
+                    style={'width': '80px', 'textAlign': 'center', 'fontWeight': 'bold'}
+                ),
 
-            dcc.Input(
-                id="final_Mn_value",
-                type='number',
-                value="",
-                disabled=True,
-                style={'width': '80px', 'textAlign': 'center', 'fontWeight': 'bold'}
-            ),
-        ], style={'display': 'flex', 'justifyContent': 'center', 'alignItems': 'center', 'gap': '20px'}),
-        ], style={'padding': '20px', 'margin': 'auto', 'width': '800px', 'box-shadow': '0px 0px 10px #ccc',
+            ], style={'display': 'flex', 'justifyContent': 'center', 'alignItems': 'center', 'gap': '20px'}),
+        ], style={'padding': '20px', 'margin': 'auto', 'width': '1000px', 'box-shadow': '0px 0px 10px #ccc',
                   'border-radius': '15px'}),
 
         html.Div([
             html.Br(),
-            html.Button('Run Simulation!', id='simulation-once-btn', n_clicks=0,
+            html.Button('Run Simulation!', id='dwsim-once-btn', n_clicks=0,
                         style={'backgroundColor': 'orange', 'color': 'white', 'fontWeight': 'bold',
                                'fontSize': '20px'}),
         ], style={'textAlign': 'center'}),
 
         html.Br(),
         dbc.Spinner(html.Div(id="loading-output4"), spinner_style={"marginTop": "40px"}),
-
-        html.Div([
-            html.Br(),
-            html.Br(),
-            dcc.Graph(id='graph1', style={'display': 'none'}),
-            dcc.Graph(id='graph2', style={'display': 'none'}),
-            dcc.Graph(id='graph3', style={'display': 'none'}),
-            dcc.Graph(id='graph4', style={'display': 'none'}),
-            dcc.Graph(id='graph5', style={'display': 'none'}),
-            dcc.Graph(id='graph6', style={'display': 'none'}),
-        ], style={'align': 'center', 'width': '50%', 'margin-left': 'auto', 'margin-right': 'auto'}),
 
     ], style={'textAlign': 'center'})
 
