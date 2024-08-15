@@ -7,7 +7,6 @@ from dash.exceptions import PreventUpdate
 from doe.DOE import *
 from apps.DataAnalytics import *
 from apps.odes import *
-from apps.optimization import *
 from apps.run_DWSIM import *
 from apps.mlp_validation import *
 
@@ -20,7 +19,6 @@ from layouts.layout_mlp_setup import *
 from layouts.layout_fast_mlp import *
 from layouts.layout_advanced_mlp import *
 from layouts.layout_mlp_evaluation import *
-from layouts.layout_optimization import *
 from layouts.layout_solve_once import *
 from layouts.layout_validate import *
 from layouts.layout_upload_results import *
@@ -143,14 +141,6 @@ app.layout = html.Div([
                                         'border-radius': '5px', 'margin-bottom': '20px',
                                         'box-shadow': '0px 4px 8px rgba(0, 0, 0, 0.1)'}),
 
-                # dcc.Tab(label='Optimization', value='Optimization',
-                #         style={'fontSize': '14px', 'width': '200px', 'padding': '10px', 'border': '1px solid #ccc',
-                #                'border-radius': '5px', 'margin-bottom': '20px', 'background-color': '#f9f9f9'},
-                #         selected_style={'fontSize': '14px', 'backgroundColor': '#007BFF', 'color': 'white',
-                #                         'width': '200px', 'padding': '10px', 'border': '1px solid #007BFF',
-                #                         'border-radius': '5px', 'margin-bottom': '20px',
-                #                         'box-shadow': '0px 4px 8px rgba(0, 0, 0, 0.1)'}),
-
                 dcc.Tab(label='About', value='About',
                         style={'fontSize': '14px', 'width': '200px', 'padding': '10px', 'border': '1px solid #ccc',
                                'border-radius': '5px', 'margin-bottom': '5px', 'background-color': '#f9f9f9'},
@@ -196,8 +186,6 @@ def update_tab_content(selected_tab):
         return layout_mlp_evaluation(input_columns)
     elif selected_tab == 'MLP_Validation':
         return layout_validate()
-    elif selected_tab == 'Optimization':
-        return layout_optimization(output_columns)
     elif selected_tab == 'About':
         return layout_about()
 
@@ -456,40 +444,6 @@ def OPTMLP(n_clicks):
 
     loading_status = ""
     return loading_status, image_components, best_hps_str, model_summary_str, r2_str
-
-
-@app.callback(Output('optimize-text', 'value'),
-              Output('optimization-time', 'value'),
-              Output("loading-output4", "children", allow_duplicate=True),
-              Input('optimize-button', 'n_clicks'),
-              State('input-desired-values-text', 'value'),
-              prevent_initial_call=True)
-def run_opt(n_clicks, input_value):
-    global Hours, MWm, M
-    inicio = time.time()
-    try:
-        input_list = re.split(r'\s*[,\s;]\s*', input_value)
-        desired_values = np.array(list(map(float, input_list)))
-        ypred = optimize(desired_values, input_columns)
-
-        predicted_str = ""
-        for i in range(len(ypred)):
-            valor_formatado = f"{ypred[i]:.3e}"
-            predicted_str += f"{input_columns[i]}:  {valor_formatado}\n"
-
-        termino = time.time()
-        duracao = termino - inicio
-
-        minutos = int(duracao // 60)
-        segundos = int(duracao % 60)
-
-        exec_time = f"Optimization Time = {minutos}:{segundos:02d}"
-
-    except Exception as e:
-        predicted_str = ""
-        exec_time = "Optimization Error"
-
-    return predicted_str, exec_time, ""
 
 
 @app.callback(Output('compressor_energy_value', 'value'),
