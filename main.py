@@ -28,9 +28,6 @@ from keras_files.KerasMLP import *
 from keras_files.KerasPredict import *
 from keras_files.KerasMLP_OPT import *
 
-M = 5.82
-MWm = 104.15
-Hours = 40
 
 with open('assets/status.txt', 'w') as file:
     file.write(str(0.0))

@@ -98,7 +98,7 @@ def layout_solve_once():
                 ),
 
             ], style={'display': 'flex', 'justifyContent': 'center', 'alignItems': 'center', 'gap': '20px'}),
-        ], style={'padding': '20px', 'margin': 'auto', 'width': '1000px', 'box-shadow': '0px 0px 10px #ccc',
+        ], style={'padding': '20px', 'margin': 'auto', 'width': '1200px', 'box-shadow': '0px 0px 10px #ccc',
                   'border-radius': '15px'}),
 
         html.Div([
