@@ -6,7 +6,7 @@ from dash.dash_table.Format import Format, Scheme
 import dash_bootstrap_components as dbc
 
 
-def layout_validate(M, MWm, Hours):
+def layout_validate():
     status = 'assets/status2.txt'
     progress_value = 0
     with open('assets/status2.txt', 'w') as file:
@@ -21,12 +21,12 @@ def layout_validate(M, MWm, Hours):
             dcc.Input(
                 id="Validation_Cases",
                 type='number',
-                value=100,
+                value=20,
                 disabled=False,
                 style={'width': '80px', 'textAlign': 'center', 'fontWeight': 'bold'}
             ),
 
-            html.Button('Run MLP Test (ODE Solver + MLP)!', id='validation-btn', n_clicks=0,
+            html.Button('Run MLP Test (DWSIM + MLP)!', id='validation-btn', n_clicks=0,
                         style={'backgroundColor': 'orange', 'color': 'white', 'fontWeight': 'bold',
                                'fontSize': '20px'}),
 
@@ -40,63 +40,74 @@ def layout_validate(M, MWm, Hours):
 
         html.Br(),
         html.Div([
-            html.Div("X MAPE:",
+            html.Div("Compressor Energy MAPE:",
                      style={'width': '150px', 'textAlign': 'center', 'paddingRight': '10px', 'fontWeight': 'bold'}),
             dcc.Input(
-                id="Xrscore",
+                id="Compressor_Energy_rscore",
                 type='text',
                 value="",
                 disabled=True,
                 style={'width': '80px', 'textAlign': 'center', 'fontWeight': 'bold'}
             ),
 
-            html.Div("PDI MAPE:",
+            html.Div("Electric Current MAPE:",
                      style={'width': '150px', 'textAlign': 'center', 'paddingRight': '10px', 'fontWeight': 'bold'}),
             dcc.Input(
-                id="PDIrscore",
+                id="Electric_Current_rscore",
                 type='text',
                 value="",
                 disabled=True,
                 style={'width': '80px', 'textAlign': 'center', 'fontWeight': 'bold'}
             ),
 
-            html.Div("Mn MAPE:",
+            html.Div("Discharge Temperature MAPE:",
                      style={'width': '150px', 'textAlign': 'center', 'paddingRight': '10px', 'fontWeight': 'bold'}),
             dcc.Input(
-                id="Mnrscore",
+                id="Discharge_Temperature_rscore",
                 type='text',
                 value="",
                 disabled=True,
                 style={'width': '80px', 'textAlign': 'center', 'fontWeight': 'bold'}
             ),
+
+            html.Div("Refrigerant Mass Flow MAPE:",
+                     style={'width': '150px', 'textAlign': 'center', 'paddingRight': '10px', 'fontWeight': 'bold'}),
+            dcc.Input(
+                id="Refrigerant_Mass_Flow_rscore",
+                type='text',
+                value="",
+                disabled=True,
+                style={'width': '80px', 'textAlign': 'center', 'fontWeight': 'bold'}
+            ),
+
         ], style={'display': 'flex', 'justifyContent': 'center', 'alignItems': 'center', 'gap': '20px'}),
 
         html.Br(),
         html.Div([
-            html.Div("POX/C MAPE:",
+            html.Div("Evaporator Temperature MAPE:",
                      style={'width': '150px', 'textAlign': 'center', 'paddingRight': '10px', 'fontWeight': 'bold'}),
             dcc.Input(
-                id="POX_C_rscore",
+                id="Evaporator_Temperature_rscore",
                 type='text',
                 value="",
                 disabled=True,
                 style={'width': '80px', 'textAlign': 'center', 'fontWeight': 'bold'}
             ),
 
-            html.Div("C/A MAPE:",
+            html.Div("Condenser Temperature MAPE:",
                      style={'width': '150px', 'textAlign': 'center', 'paddingRight': '10px', 'fontWeight': 'bold'}),
             dcc.Input(
-                id="C_A_rscore",
+                id="Condenser_Temperature_rscore",
                 type='text',
                 value="",
                 disabled=True,
                 style={'width': '80px', 'textAlign': 'center', 'fontWeight': 'bold'}
             ),
 
-            html.Div("POX/M MAPE:",
+            html.Div("Adiabatic Efficiency MAPE:",
                      style={'width': '150px', 'textAlign': 'center', 'paddingRight': '10px', 'fontWeight': 'bold'}),
             dcc.Input(
-                id="POX_M_rscore",
+                id="Adiabatic_Efficiency_rscore",
                 type='text',
                 value="",
                 disabled=True,

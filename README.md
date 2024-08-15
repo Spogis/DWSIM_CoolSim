@@ -1,12 +1,12 @@
 
-# DWSIM(IA)
+# DWSIM CoolSim (IA)
 ## Overview
 
 DWSIM(IA) is an innovative application designed to bridge the capabilities of DWSIM with advanced multivariate Design of Experiments (DOE) analysis based on Latin Hypercube Sampling (LHS). This integration enables the handling of both continuous and discrete variables, allowing for comprehensive exploration and optimization of process conditions. By leveraging the powerful simulation engine of DWSIM, users can generate extensive datasets that form the foundation for sophisticated DOE analyses.
 
 The application goes a step further by using simulated data from DWSIM to develop soft sensors based on Multilayer Perceptron (MLP) neural networks. These soft sensors provide real-time predictions and insights, enhancing process monitoring and control. With DWSIM(IA), engineers and researchers can efficiently explore design spaces, identify optimal conditions, and implement predictive models, ultimately leading to more efficient and robust process operations.
 
-## Key Features of DWSIM(IA) App
+## Key Features of DWSIM CoolSim (IA) App
 
 - *Seamless Integration with DWSIM:* Effortlessly connect with DWSIM to perform simulations and gather comprehensive datasets for further analysis.
 - *Multivariate DOE Analysis:* Utilize advanced Design of Experiments (DOE) techniques, including Latin Hypercube Sampling (LHS), to explore a wide range of process variables, both continuous and discrete.
@@ -24,7 +24,7 @@ To install the necessary dependencies, you need to have Python installed on your
 
 1. **Clone the Repository**
 
-   First, clone the DWSIM(IA) App repository to your local machine.
+   First, clone the DWSIM CoolSim (IA) App repository to your local machine.
 
 2. **Install Dependencies**
 

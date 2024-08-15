@@ -9,6 +9,7 @@ from apps.DataAnalytics import *
 from apps.odes import *
 from apps.optimization import *
 from apps.run_DWSIM import *
+from apps.mlp_validation import *
 
 from layouts.layout_DOE import *
 from layouts.layout_parallel_chart import *
@@ -41,7 +42,7 @@ drop_options = initial_columns()
 # Inicializa o app Dash
 app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
 
-app.title = "DWSIM(IA)"
+app.title = "DWSIM CoolSim (IA)"
 
 server = app.server
 
@@ -134,13 +135,13 @@ app.layout = html.Div([
                                         'border-radius': '5px', 'margin-bottom': '20px',
                                         'box-shadow': '0px 4px 8px rgba(0, 0, 0, 0.1)'}),
 
-                # dcc.Tab(label='MLP Test', value='MLP_Validation',
-                #         style={'fontSize': '14px', 'width': '200px', 'padding': '10px', 'border': '1px solid #ccc',
-                #                'border-radius': '5px', 'margin-bottom': '20px', 'background-color': '#f9f9f9'},
-                #         selected_style={'fontSize': '14px', 'backgroundColor': '#007BFF', 'color': 'white',
-                #                         'width': '200px', 'padding': '10px', 'border': '1px solid #007BFF',
-                #                         'border-radius': '5px', 'margin-bottom': '20px',
-                #                         'box-shadow': '0px 4px 8px rgba(0, 0, 0, 0.1)'}),
+                dcc.Tab(label='MLP Test', value='MLP_Validation',
+                        style={'fontSize': '14px', 'width': '200px', 'padding': '10px', 'border': '1px solid #ccc',
+                               'border-radius': '5px', 'margin-bottom': '20px', 'background-color': '#f9f9f9'},
+                        selected_style={'fontSize': '14px', 'backgroundColor': '#007BFF', 'color': 'white',
+                                        'width': '200px', 'padding': '10px', 'border': '1px solid #007BFF',
+                                        'border-radius': '5px', 'margin-bottom': '20px',
+                                        'box-shadow': '0px 4px 8px rgba(0, 0, 0, 0.1)'}),
 
                 # dcc.Tab(label='Optimization', value='Optimization',
                 #         style={'fontSize': '14px', 'width': '200px', 'padding': '10px', 'border': '1px solid #ccc',
@@ -194,7 +195,7 @@ def update_tab_content(selected_tab):
     elif selected_tab == 'MLP_Evaluation':
         return layout_mlp_evaluation(input_columns)
     elif selected_tab == 'MLP_Validation':
-        return layout_validate(M, MWm, Hours)
+        return layout_validate()
     elif selected_tab == 'Optimization':
         return layout_optimization(output_columns)
     elif selected_tab == 'About':
@@ -527,59 +528,68 @@ def simulate(n_clicks, evaporator_temperature_value, condenser_temperature_value
                Output("progress2", "value", allow_duplicate=True),
                Output("progress2", "label", allow_duplicate=True),
                Output("loading-output5", "children", allow_duplicate=True),
-               Output('Xrscore', 'value'),
-               Output('PDIrscore', 'value'),
-               Output('Mnrscore', 'value'),
-               Output('POX_C_rscore', 'value'),
-               Output('C_A_rscore', 'value'),
-               Output('POX_M_rscore', 'value')],
+               Output('Compressor_Energy_rscore', 'value'),
+               Output('Electric_Current_rscore', 'value'),
+               Output('Discharge_Temperature_rscore', 'value'),
+               Output('Refrigerant_Mass_Flow_rscore', 'value'),
+               Output('Evaporator_Temperature_rscore', 'value'),
+               Output('Condenser_Temperature_rscore', 'value'),
+               Output('Adiabatic_Efficiency_rscore', 'value')],
               Input('validation-btn', 'n_clicks'),
               State('Validation_Cases', 'value'),
               prevent_initial_call=True)
 def simulate(n_clicks, ValidationCases):
-    global Hours, MWm, M
-    global input_columns
-    t = None
-    y = None
-
     print(input_columns)
 
-    if input_columns == ['POX/C', 'C/A', 'POX/M']:
-        MLP_Validation(Hours, MWm, M, ValidationCases)
+    if input_columns == ['Evaporator Temperature', 'Condenser Temperature', 'Adiabatic Efficiency']:
+        MLP_Validation(ValidationCases)
         #Calculate R2 Scores
         df = pd.read_excel('datasets/MLP_Validation_Dataset.xlsx')
 
-        X_r2 = mean_absolute_percentage_error(df['MLP_X'], df['X'])*100
-        X_formatado = f"{X_r2:.2f}%"
+        energy_r2 = mean_absolute_percentage_error(df['MLP_Compressor_Energy'],
+                                                   df['Compressor Energy'])*100
+        energy_formatado = f"{energy_r2:.2f}%"
 
-        PDI_r2 = mean_absolute_percentage_error(df['MLP_PDI'], df['PDI'])*100
-        PDI_formatado = f"{PDI_r2:.2f}%"
+        electric_current_r2 = mean_absolute_percentage_error(df['MLP_Electric_Current'],
+                                                             df['Electric Current'])*100
+        electric_current_formatado = f"{electric_current_r2:.2f}%"
 
-        Mn_r2 = mean_absolute_percentage_error(df['MLP_Mn'], df['Mn'])*100
-        Mn_formatado = f"{Mn_r2:.2f}%"
+        discharge_temperature_r2 = mean_absolute_percentage_error(df['MLP_Discharge_Temperature'],
+                                                                  df['Discharge Temperature'])*100
+        discharge_temperature_formatado = f"{discharge_temperature_r2:.2f}%"
+
+        mass_flow_r2 = mean_absolute_percentage_error(df['MLP_Refrigerant_Mass_Flow'],
+                                                      df['Refrigerant Mass Flow']) * 100
+        mass_flow_formatado = f"{mass_flow_r2:.2f}%"
+
         with open('assets/status2.txt', 'w') as file:
             file.write(str(100))
 
-        return "MLP Test Finished!", 100, 100, "", X_formatado, PDI_formatado, Mn_formatado, "N/A", "N/A", "N/A"
+        return ("MLP Test Finished!", 100, 100, "", energy_formatado, electric_current_formatado,
+                discharge_temperature_formatado, mass_flow_formatado, "N/A", "N/A", "N/A")
 
-    if input_columns == ['X','PDI','Mn']:
-        Inverse_MLP_Validation(Hours, MWm, M, ValidationCases)
+    if input_columns == ['Compressor Energy', 'Electric Current', 'Discharge Temperature', 'Refrigerant Mass Flow']:
+        Inverse_MLP_Validation(ValidationCases)
         # Calculate R2 Scores
         df = pd.read_excel('datasets/MLP_Validation_Dataset.xlsx')
 
-        POX_C_r2 = mean_absolute_percentage_error(df['MLP_POX/C'], df['POX/C'])*100
-        POX_C_formatado = f"{POX_C_r2:.2f}%"
+        Evaporator_Temperature_r2 = mean_absolute_percentage_error(df['MLP_Evaporator_Temperature'],
+                                                  df['Evaporator Temperature'])*100
+        Evaporator_Temperature_formatado = f"{Evaporator_Temperature_r2:.2f}%"
 
-        C_A_r2 = mean_absolute_percentage_error(df['MLP_C/A'], df['C/A'])*100
-        C_A_formatado = f"{C_A_r2:.2f}%"
+        Condenser_Temperature_r2 = mean_absolute_percentage_error(df['MLP_Condenser_Temperature'],
+                                                df['Condenser Temperature'])*100
+        Condenser_Temperature_formatado = f"{Condenser_Temperature_r2:.2f}%"
 
-        POX_M_r2 = mean_absolute_percentage_error(df['MLP_POX/M'], df['POX/M'])*100
-        POX_M_formatado = f"{POX_M_r2:.2f}%"
+        Adiabatic_Efficiency_r2 = mean_absolute_percentage_error(df['MLP_Adiabatic_Efficiency'],
+                                                  df['Adiabatic Efficiency'])*100
+        Adiabatic_Efficiency_formatado = f"{Adiabatic_Efficiency_r2:.2f}%"
 
         with open('assets/status2.txt', 'w') as file:
             file.write(str(100))
 
-        return "MLP Test Finished!", 100, 100, "", "N/A", "N/A", "N/A", POX_C_formatado, C_A_formatado, POX_M_formatado
+        return ("MLP Test Finished!", 100, 100, "", "N/A", "N/A", "N/A", "N/A",
+                Evaporator_Temperature_formatado, Condenser_Temperature_formatado, Adiabatic_Efficiency_formatado)
 
 
 @app.callback(
