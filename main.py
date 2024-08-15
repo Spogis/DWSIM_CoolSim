@@ -8,9 +8,7 @@ from doe.DOE import *
 from apps.DataAnalytics import *
 from apps.odes import *
 from apps.optimization import *
-from apps.ReactionConstants import *
 from apps.run_DWSIM import *
-from apps.print_flowsheet import *
 
 from layouts.layout_DOE import *
 from layouts.layout_parallel_chart import *
@@ -460,30 +458,6 @@ def OPTMLP(n_clicks):
 
     loading_status = ""
     return loading_status, image_components, best_hps_str, model_summary_str, r2_str
-
-
-@app.callback(Output('reaction_time_value', 'value'),
-              Input('reaction_time_value', 'value'))
-def update_time(value):
-    global Hours
-    Hours = value
-    return value
-
-
-@app.callback(Output('styrene_monomer_value', 'value'),
-              Input('styrene_monomer_value', 'value'))
-def update_styrene_monomer_value(value):
-    global M
-    M = value
-    return value
-
-
-@app.callback(Output('monomer_molar_mass_value', 'value'),
-              Input('monomer_molar_mass_value', 'value'))
-def update_monomer_molar_mass_value(value):
-    global MWm
-    MWm = value
-    return value
 
 
 @app.callback(Output('optimize-text', 'value'),
