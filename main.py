@@ -10,7 +10,6 @@ from apps.DataAnalytics import *
 from apps.odes import *
 from apps.run_DWSIM import *
 from apps.mlp_validation import *
-from apps.excel_aut import *
 
 from layouts.layout_DOE import *
 from layouts.layout_parallel_chart import *
