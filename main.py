@@ -10,6 +10,7 @@ from apps.DataAnalytics import *
 from apps.odes import *
 from apps.run_DWSIM import *
 from apps.mlp_validation import *
+from apps.excel_aut import *
 
 from layouts.layout_DOE import *
 from layouts.layout_parallel_chart import *
@@ -753,6 +754,19 @@ def update_figure(rows, stored_filters):
         df = df.drop(columns=['index'])
     fig = update_graph_parcoords_min_max(df, filters)
     return fig
+
+#######################################################################################################################
+# RUN EXCEL
+#######################################################################################################################
+
+@app.callback(Output('Altura', 'value'),
+              Input('run-excel-btn', 'n_clicks'),
+              State('Volume', 'value'))
+def runexcel(n_clicks, Volume):
+    if n_clicks > 0:
+        valor = atualiza_planilha(Volume)
+        return valor
+    return None
 
 
 if __name__ == '__main__':
