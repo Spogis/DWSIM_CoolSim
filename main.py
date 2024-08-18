@@ -190,6 +190,15 @@ def update_tab_content(selected_tab):
     elif selected_tab == 'About':
         return layout_about()
 
+@app.callback(Output('evaporator_temperature_value', 'value'),
+              Output('condenser_temperature_value', 'value'),
+              Input('aproach_temperature_value', 'value'),
+              Input('desired_temperature_value', 'value'),
+              Input('external_temperature_value', 'value'))
+def set_temperatures(aproach_temperature_value, desired_temperature_value, external_temperature_value):
+    evaporator_temperature = desired_temperature_value - aproach_temperature_value
+    condenser_temperature = external_temperature_value + aproach_temperature_value
+    return evaporator_temperature, condenser_temperature
 
 @app.callback(Output('create-doe-btn', 'children', allow_duplicate=True),
               Input('create-doe-btn', 'n_clicks'),
@@ -773,7 +782,3 @@ def runexcel(n_clicks, Volume):
 
 if __name__ == '__main__':
     app.run_server(debug=False)
-
-#rm -rf .git
-
-#git push origin2 master --force

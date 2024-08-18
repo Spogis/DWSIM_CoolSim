@@ -59,6 +59,34 @@ def layout_solve_once():
 
         html.Br(),
         html.Div([
+            html.Div([
+                html.Div("Evaporator Temperature [°C]:", id="tooltip-x",
+                         style={'width': '150px', 'textAlign': 'center', 'paddingRight': '10px', 'fontWeight': 'bold'}),
+
+                dcc.Input(
+                    id="evaporator_temperature_value",
+                    type='text',
+                    value="",
+                    disabled=True,
+                    style={'width': '80px', 'textAlign': 'center', 'fontWeight': 'bold'}
+                ),
+
+                html.Div("Condenser Temperature [°C]:", id="tooltip-pdi",
+                         style={'width': '150px', 'textAlign': 'center', 'paddingRight': '10px', 'fontWeight': 'bold'}),
+
+                dcc.Input(
+                    id="condenser_temperature_value",
+                    type='text',
+                    value="",
+                    disabled=True,
+                    style={'width': '80px', 'textAlign': 'center', 'fontWeight': 'bold'}
+                ),
+            ], style={'display': 'flex', 'justifyContent': 'center', 'alignItems': 'center', 'gap': '20px'}),
+        ], style={'padding': '20px', 'margin': 'auto', 'width': '1200px', 'box-shadow': '0px 0px 10px #ccc',
+                  'border-radius': '15px'}),
+
+        html.Br(),
+        html.Div([
             html.H2("DWSIM Simulation Values:",
                     style={'display': 'flex', 'justifyContent': 'center', 'alignItems': 'center', 'fontWeight': 'bold'}),
 
