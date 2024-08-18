@@ -455,12 +455,15 @@ def OPTMLP(n_clicks):
               Output('output-dwsim-fig', 'figure', allow_duplicate=True),
               Output('output-dwsim-fig', 'style', allow_duplicate=True),
               Input('dwsim-once-btn', 'n_clicks'),
-              State('evaporator_temperature_value', 'value'),
-              State('condenser_temperature_value', 'value'),
+              State('desired_temperature_value', 'value'),
+              State('external_temperature_value', 'value'),
+              State('aproach_temperature_value', 'value'),
               State('adiabatic_efficiency_value', 'value'),
               prevent_initial_call=True)
-def simulate(n_clicks, evaporator_temperature_value, condenser_temperature_value, adiabatic_efficiency_value):
+def simulate(n_clicks, desired_temperature_value, external_temperature_value, aproach_temperature_value, adiabatic_efficiency_value):
     if n_clicks > 0:
+        evaporator_temperature_value = desired_temperature_value - aproach_temperature_value
+        condenser_temperature_value = external_temperature_value + aproach_temperature_value
         energy, discharge_temperature, mass_flow = run_DWSIM(evaporator_temperature=evaporator_temperature_value,
                                                              condenser_temperature=condenser_temperature_value,
                                                              adiabatic_efficiency=adiabatic_efficiency_value,

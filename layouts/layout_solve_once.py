@@ -14,22 +14,32 @@ def layout_solve_once():
                 style={'display': 'flex', 'justifyContent': 'center', 'alignItems': 'center', 'fontWeight': 'bold'}),
 
         html.Div([
-            html.Div("Evaporator Temperature [C]:",
+            html.Div("Delta T Aproach [°C]:",
                      style={'width': '150px', 'textAlign': 'center', 'paddingRight': '10px', 'fontWeight': 'bold'}),
             dcc.Input(
-                id="evaporator_temperature_value",
+                id="aproach_temperature_value",
                 type='number',
-                value=16,
+                value=10,
                 disabled=False,
                 style={'width': '80px', 'textAlign': 'center', 'fontWeight': 'bold'}
             ),
 
-            html.Div("Condenser Temperature [C]:",
+            html.Div("Desired Temperature [°C]:",
                      style={'width': '150px', 'textAlign': 'center', 'paddingRight': '10px', 'fontWeight': 'bold'}),
             dcc.Input(
-                id="condenser_temperature_value",
+                id="desired_temperature_value",
                 type='number',
-                value=50,
+                value=23,
+                disabled=False,
+                style={'width': '80px', 'textAlign': 'center', 'fontWeight': 'bold'}
+            ),
+
+            html.Div("External Ambient Temperature [°C]:",
+                     style={'width': '150px', 'textAlign': 'center', 'paddingRight': '10px', 'fontWeight': 'bold'}),
+            dcc.Input(
+                id="external_temperature_value",
+                type='number',
+                value=35,
                 disabled=False,
                 style={'width': '80px', 'textAlign': 'center', 'fontWeight': 'bold'}
             ),
@@ -44,7 +54,7 @@ def layout_solve_once():
                 style={'width': '80px', 'textAlign': 'center', 'fontWeight': 'bold'}
             ),
             ], style={'display': 'flex', 'justifyContent': 'center', 'alignItems': 'center', 'gap': '20px'}),
-        ], style={'padding': '20px', 'margin': 'auto', 'width': '800px', 'box-shadow': '0px 0px 10px #ccc',
+        ], style={'padding': '20px', 'margin': 'auto', 'width': '1200px', 'box-shadow': '0px 0px 10px #ccc',
                   'border-radius': '15px'}),
 
         html.Br(),
@@ -75,7 +85,7 @@ def layout_solve_once():
                     style={'width': '80px', 'textAlign': 'center', 'fontWeight': 'bold'}
                 ),
 
-                html.Div("Discharge Temperature [C]:", id="tooltip-mn",
+                html.Div("Discharge Temperature [°C]:", id="tooltip-mn",
                          style={'width': '150px', 'textAlign': 'center', 'paddingRight': '10px', 'fontWeight': 'bold'}),
 
                 dcc.Input(
