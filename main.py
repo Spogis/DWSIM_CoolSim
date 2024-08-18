@@ -162,7 +162,6 @@ app.layout = html.Div([
 ])
 
 
-
 @app.callback(Output('tabs-content', 'children'),
               [Input('tabs', 'value')])
 def update_tab_content(selected_tab):
@@ -191,6 +190,7 @@ def update_tab_content(selected_tab):
     elif selected_tab == 'About':
         return layout_about()
 
+
 @app.callback(Output('evaporator_temperature_value', 'value'),
               Output('condenser_temperature_value', 'value'),
               Input('approach_temperature_value', 'value'),
@@ -200,6 +200,7 @@ def set_temperatures(aproach_temperature_value, desired_temperature_value, exter
     evaporator_temperature = desired_temperature_value - aproach_temperature_value
     condenser_temperature = external_temperature_value + aproach_temperature_value
     return evaporator_temperature, condenser_temperature
+
 
 @app.callback(Output('create-doe-btn', 'children', allow_duplicate=True),
               Input('create-doe-btn', 'n_clicks'),
@@ -222,10 +223,9 @@ def create_doe(n_clicks, rows, num_simulacoes):
 
     return 'DOE Table Generated Successfully!'
 
-@app.callback(
-    Output('table_data_analysis', 'data'),
-    Input("activefilters", "data")
-)
+
+@app.callback(Output('table_data_analysis', 'data'),
+              Input("activefilters", "data"))
 def udpate_table(data):
     df_ODES_Dataset = pd.read_excel('datasets/ODEs_Dataset.xlsx')
     if 'index' in df_ODES_Dataset.columns:
@@ -255,6 +255,7 @@ def udpate_table(data):
     exportfile = 'datasets/Parallel_Filter_Stats.xlsx'
     descriptive_stats.to_excel(exportfile, index=False)
     return descriptive_stats.to_dict('records')
+
 
 @app.callback(
     Output('activefilters', 'data'),
@@ -402,6 +403,7 @@ def MLP(n_clicks):
     loading_status = ""
     return loading_status, image_components, r2_str
 
+
 @app.callback(Output('output-text', 'value'),
               Input('predict-button', 'n_clicks'),
               State('input-text', 'value'))
@@ -420,6 +422,7 @@ def update_output(n_clicks, input_value):
         predicted_str = ""
     return predicted_str
 
+
 @app.callback([Output("loading-output2", "children", allow_duplicate=True),
                Output("button-output-advanced", "children", allow_duplicate=True),
                Output('best-hps-textarea', 'value'),
@@ -433,7 +436,7 @@ def OPTMLP(n_clicks):
     if 'index' in dataset.columns:
         dataset = dataset.drop(columns=['index'])
 
-    best_hps_str, model_summary_str, r2_str  = RunOptimizedMLP(dataset, input_columns, output_columns)
+    best_hps_str, model_summary_str, r2_str = RunOptimizedMLP(dataset, input_columns, output_columns)
 
     # Caminho do diretório contendo as imagens
     directory_path = 'assets/images'
@@ -470,10 +473,11 @@ def OPTMLP(n_clicks):
               State('approach_temperature_value', 'value'),
               State('adiabatic_efficiency_value', 'value'),
               prevent_initial_call=True)
-def simulate(n_clicks, desired_temperature_value, external_temperature_value, aproach_temperature_value, adiabatic_efficiency_value):
+def simulate(n_clicks, desired_temperature_value, external_temperature_value, approach_temperature_value,
+             adiabatic_efficiency_value):
     if n_clicks > 0:
-        evaporator_temperature_value = desired_temperature_value - aproach_temperature_value
-        condenser_temperature_value = external_temperature_value + aproach_temperature_value
+        evaporator_temperature_value = desired_temperature_value - approach_temperature_value
+        condenser_temperature_value = external_temperature_value + approach_temperature_value
         energy, discharge_temperature, mass_flow = run_DWSIM(evaporator_temperature=evaporator_temperature_value,
                                                              condenser_temperature=condenser_temperature_value,
                                                              adiabatic_efficiency=adiabatic_efficiency_value,
@@ -549,6 +553,7 @@ def simulate(n_clicks, desired_temperature_value, external_temperature_value, ap
     # Caso nenhum clique tenha ocorrido
     return None, None, None, None, "", None, {'display': 'none'}
 
+
 @app.callback([Output('validation-btn', 'children', allow_duplicate=True),
                Output("progress2", "value", allow_duplicate=True),
                Output("progress2", "label", allow_duplicate=True),
@@ -568,7 +573,7 @@ def simulate(n_clicks, ValidationCases):
 
     if input_columns == ['Evaporator Temperature', 'Condenser Temperature', 'Adiabatic Efficiency']:
         MLP_Validation(ValidationCases)
-        #Calculate R2 Scores
+        # Calculate R2 Scores
         df = pd.read_excel('datasets/MLP_Validation_Dataset.xlsx')
 
         energy_r2 = mean_absolute_percentage_error(df['MLP_Compressor_Energy'],
@@ -599,15 +604,15 @@ def simulate(n_clicks, ValidationCases):
         df = pd.read_excel('datasets/MLP_Validation_Dataset.xlsx')
 
         Evaporator_Temperature_r2 = mean_absolute_percentage_error(df['MLP_Evaporator_Temperature'],
-                                                  df['Evaporator Temperature'])*100
+                                                                   df['Evaporator Temperature'])*100
         Evaporator_Temperature_formatado = f"{Evaporator_Temperature_r2:.2f}%"
 
         Condenser_Temperature_r2 = mean_absolute_percentage_error(df['MLP_Condenser_Temperature'],
-                                                df['Condenser Temperature'])*100
+                                                                  df['Condenser Temperature'])*100
         Condenser_Temperature_formatado = f"{Condenser_Temperature_r2:.2f}%"
 
         Adiabatic_Efficiency_r2 = mean_absolute_percentage_error(df['MLP_Adiabatic_Efficiency'],
-                                                  df['Adiabatic Efficiency'])*100
+                                                                 df['Adiabatic Efficiency'])*100
         Adiabatic_Efficiency_formatado = f"{Adiabatic_Efficiency_r2:.2f}%"
 
         with open('assets/status2.txt', 'w') as file:
@@ -636,7 +641,7 @@ def update_progress(n_clicks, n):
 
 @app.callback(Output('column-input-selector', 'value', allow_duplicate=True),
               Output('column-output-selector', 'value', allow_duplicate=True),
-              Input('MLP-setup-selector','value'),
+              Input('MLP-setup-selector', 'value'),
               prevent_initial_call=True)
 def change_MLP_setup(MLP_setup_selector):
     global input_columns, output_columns, drop_options
@@ -682,9 +687,7 @@ def update_output(contents, filename):
                Output('create-doe-btn', 'children', allow_duplicate=True)],
               Input('adding-rows-btn', 'n_clicks'),
               [State('table', 'data')],
-              prevent_initial_call=True
-)
-
+              prevent_initial_call=True)
 def add_row(n_clicks, rows):
     if n_clicks > 0:
         rows.append({col: ('' if col not in ['Variable Name', 'Variable Type', 'Trust Level']
@@ -767,18 +770,6 @@ def update_figure(rows, stored_filters):
     fig = update_graph_parcoords_min_max(df, filters)
     return fig
 
-#######################################################################################################################
-# RUN EXCEL
-#######################################################################################################################
-
-@app.callback(Output('Altura', 'value'),
-              Input('run-excel-btn', 'n_clicks'),
-              State('Volume', 'value'))
-def runexcel(n_clicks, Volume):
-    if n_clicks > 0:
-        valor = atualiza_planilha(Volume)
-        return valor
-    return None
 
 
 if __name__ == '__main__':
