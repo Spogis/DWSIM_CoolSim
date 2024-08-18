@@ -20,6 +20,8 @@ def layout_solve_once():
                     id="approach_temperature_value",
                     type='number',
                     value=10,
+                    min=5,
+                    max=20,
                     disabled=False,
                     style={'width': '80px', 'textAlign': 'center', 'fontWeight': 'bold'}
                 ),
@@ -52,6 +54,8 @@ def layout_solve_once():
                     id="adiabatic_efficiency_value",
                     type='number',
                     value=75,
+                    min=50,
+                    max=100,
                     disabled=False,
                     style={'width': '80px', 'textAlign': 'center', 'fontWeight': 'bold'}
                 ),

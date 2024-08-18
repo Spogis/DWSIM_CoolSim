@@ -72,6 +72,7 @@ def run_DWSIM(evaporator_temperature, condenser_temperature, adiabatic_efficienc
 
     # request a calculation
     errors = manager.CalculateFlowsheet4(myflowsheet)
+    errors = manager.CalculateFlowsheet4(myflowsheet)
 
     # Get Compressor Energy
     obj = myflowsheet.GetFlowsheetSimulationObject('Energia do Compressor')
@@ -94,18 +95,3 @@ def run_DWSIM(evaporator_temperature, condenser_temperature, adiabatic_efficienc
 
     return energia, discharge_temperature, mass_flow
 
-
-def teste():
-    energy, discharge_temperature, mass_flow = run_DWSIM(evaporator_temperature=10,
-                                                         condenser_temperature=50,
-                                                         adiabatic_efficiency=75)
-
-    energy = energy * 1000
-    discharge_temperature = discharge_temperature - 273.15
-    mass_flow = mass_flow * 60
-    electric_current = energy / 220
-
-    energy = "{:1.2f}".format(energy)
-    discharge_temperature = "{:1.2f}".format(discharge_temperature)
-    mass_flow = "{:1.2f}".format(mass_flow)
-    electric_current = "{:1.2f}".format(electric_current)
