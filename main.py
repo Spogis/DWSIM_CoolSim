@@ -774,6 +774,6 @@ def runexcel(n_clicks, Volume):
 if __name__ == '__main__':
     app.run_server(debug=False)
 
-rm -rf .git
+#rm -rf .git
 
 #git push origin2 master --force
