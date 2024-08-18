@@ -4,6 +4,7 @@ from datetime import datetime
 import base64
 from PIL import Image
 from dash.exceptions import PreventUpdate
+from sklearn.metrics import mean_absolute_percentage_error
 
 from doe.DOE import *
 from apps.DataAnalytics import *
@@ -192,7 +193,7 @@ def update_tab_content(selected_tab):
 
 @app.callback(Output('evaporator_temperature_value', 'value'),
               Output('condenser_temperature_value', 'value'),
-              Input('aproach_temperature_value', 'value'),
+              Input('approach_temperature_value', 'value'),
               Input('desired_temperature_value', 'value'),
               Input('external_temperature_value', 'value'))
 def set_temperatures(aproach_temperature_value, desired_temperature_value, external_temperature_value):
@@ -466,7 +467,7 @@ def OPTMLP(n_clicks):
               Input('dwsim-once-btn', 'n_clicks'),
               State('desired_temperature_value', 'value'),
               State('external_temperature_value', 'value'),
-              State('aproach_temperature_value', 'value'),
+              State('approach_temperature_value', 'value'),
               State('adiabatic_efficiency_value', 'value'),
               prevent_initial_call=True)
 def simulate(n_clicks, desired_temperature_value, external_temperature_value, aproach_temperature_value, adiabatic_efficiency_value):

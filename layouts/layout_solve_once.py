@@ -10,49 +10,51 @@ def layout_solve_once():
     layout = html.Div([
         html.Br(),
         html.Div([
-        html.H2("Process Conditions:",
-                style={'display': 'flex', 'justifyContent': 'center', 'alignItems': 'center', 'fontWeight': 'bold'}),
+            html.H2("Process Conditions:",
+                    style={'display': 'flex', 'justifyContent': 'center', 'alignItems': 'center', 'fontWeight': 'bold'}),
 
-        html.Div([
-            html.Div("Delta T Aproach [°C]:",
-                     style={'width': '150px', 'textAlign': 'center', 'paddingRight': '10px', 'fontWeight': 'bold'}),
-            dcc.Input(
-                id="aproach_temperature_value",
-                type='number',
-                value=10,
-                disabled=False,
-                style={'width': '80px', 'textAlign': 'center', 'fontWeight': 'bold'}
-            ),
+            html.Div([
+                html.Div("Delta T Approach [°C]:",
+                         style={'width': '150px', 'textAlign': 'center', 'paddingRight': '10px', 'fontWeight': 'bold'}),
+                dcc.Input(
+                    id="approach_temperature_value",
+                    type='number',
+                    value=10,
+                    disabled=False,
+                    style={'width': '80px', 'textAlign': 'center', 'fontWeight': 'bold'}
+                ),
 
-            html.Div("Desired Temperature [°C]:",
-                     style={'width': '150px', 'textAlign': 'center', 'paddingRight': '10px', 'fontWeight': 'bold'}),
-            dcc.Input(
-                id="desired_temperature_value",
-                type='number',
-                value=23,
-                disabled=False,
-                style={'width': '80px', 'textAlign': 'center', 'fontWeight': 'bold'}
-            ),
+                html.Div("Desired Temperature [°C]:",
+                         style={'width': '150px', 'textAlign': 'center', 'paddingRight': '10px', 'fontWeight': 'bold'}),
+                dcc.Input(
+                    id="desired_temperature_value",
+                    type='number',
+                    value=23,
+                    min=18,
+                    disabled=False,
+                    style={'width': '80px', 'textAlign': 'center', 'fontWeight': 'bold'}
+                ),
 
-            html.Div("External Ambient Temperature [°C]:",
-                     style={'width': '150px', 'textAlign': 'center', 'paddingRight': '10px', 'fontWeight': 'bold'}),
-            dcc.Input(
-                id="external_temperature_value",
-                type='number',
-                value=35,
-                disabled=False,
-                style={'width': '80px', 'textAlign': 'center', 'fontWeight': 'bold'}
-            ),
+                html.Div("External Ambient Temperature [°C]:",
+                         style={'width': '150px', 'textAlign': 'center', 'paddingRight': '10px', 'fontWeight': 'bold'}),
+                dcc.Input(
+                    id="external_temperature_value",
+                    type='number',
+                    value=35,
+                    max=48,
+                    disabled=False,
+                    style={'width': '80px', 'textAlign': 'center', 'fontWeight': 'bold'}
+                ),
 
-            html.Div("Adiabatic Efficiency [%]:",
-                     style={'width': '150px', 'textAlign': 'center', 'paddingRight': '10px', 'fontWeight': 'bold'}),
-            dcc.Input(
-                id="adiabatic_efficiency_value",
-                type='number',
-                value=75,
-                disabled=False,
-                style={'width': '80px', 'textAlign': 'center', 'fontWeight': 'bold'}
-            ),
+                html.Div("Adiabatic Efficiency [%]:",
+                         style={'width': '150px', 'textAlign': 'center', 'paddingRight': '10px', 'fontWeight': 'bold'}),
+                dcc.Input(
+                    id="adiabatic_efficiency_value",
+                    type='number',
+                    value=75,
+                    disabled=False,
+                    style={'width': '80px', 'textAlign': 'center', 'fontWeight': 'bold'}
+                ),
             ], style={'display': 'flex', 'justifyContent': 'center', 'alignItems': 'center', 'gap': '20px'}),
         ], style={'padding': '20px', 'margin': 'auto', 'width': '1200px', 'box-shadow': '0px 0px 10px #ccc',
                   'border-radius': '15px'}),
