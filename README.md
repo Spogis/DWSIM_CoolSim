@@ -2,10 +2,11 @@
 # DWSIM CoolSim (IA)
 ## Overview
 
-DWSIM(IA) is an innovative application designed to bridge the capabilities of DWSIM with advanced multivariate Design of Experiments (DOE) analysis based on Latin Hypercube Sampling (LHS). This integration enables the handling of both continuous and discrete variables, allowing for comprehensive exploration and optimization of process conditions. By leveraging the powerful simulation engine of DWSIM, users can generate extensive datasets that form the foundation for sophisticated DOE analyses.
+DWSIM COOLSIM (IA) is an innovative application designed to simulate refrigeration and air conditioning systems and serves as an example for developing more complex systems for both refrigeration and chemical process simulation.
+ 
+This application bridges the capabilities of DWSIM with advanced multivariate Design of Experiments (DOE) analysis based on Latin Hypercube Sampling (LHS). This integration enables the handling of both continuous and discrete variables, allowing for comprehensive exploration and optimization of process conditions. By leveraging the powerful simulation engine of DWSIM, users can generate extensive datasets that form the foundation for sophisticated DOE analyses.
 
-The application goes a step further by using simulated data from DWSIM to develop soft sensors based on Multilayer Perceptron (MLP) neural networks. These soft sensors provide real-time predictions and insights, enhancing process monitoring and control. With DWSIM(IA), engineers and researchers can efficiently explore design spaces, identify optimal conditions, and implement predictive models, ultimately leading to more efficient and robust process operations.
-
+The application goes a step further by using simulated data from DWSIM to develop soft sensors based on Multilayer Perceptron (MLP) neural networks. These soft sensors provide real-time predictions and insights, enhancing process monitoring and control. With DWSIM COOLSIM (IA), engineers and researchers can efficiently explore design spaces, identify optimal conditions, and implement predictive models, ultimately leading to more efficient and robust process operations.
 ## Key Features of DWSIM CoolSim (IA) App
 
 - *Seamless Integration with DWSIM:* Effortlessly connect with DWSIM to perform simulations and gather comprehensive datasets for further analysis.

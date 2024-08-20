@@ -10,29 +10,27 @@ from System import String, Environment
 
 from apps.print_flowsheet import *
 
-dwsimpath = "C:\\Users\\nicol\\AppData\\Local\\DWSIM\\"
-
-
-clr.AddReference(dwsimpath + "CapeOpen.dll")
-clr.AddReference(dwsimpath + "DWSIM.Automation.dll")
-clr.AddReference(dwsimpath + "DWSIM.Interfaces.dll")
-clr.AddReference(dwsimpath + "DWSIM.GlobalSettings.dll")
-clr.AddReference(dwsimpath + "DWSIM.SharedClasses.dll")
-clr.AddReference(dwsimpath + "DWSIM.Thermodynamics.dll")
-clr.AddReference(dwsimpath + "DWSIM.UnitOperations.dll")
-clr.AddReference(dwsimpath + "DWSIM.Inspector.dll")
-clr.AddReference(dwsimpath + "System.Buffers.dll")
-clr.AddReference(dwsimpath + "DWSIM.Thermodynamics.ThermoC.dll")
-
-from DWSIM.Interfaces.Enums.GraphicObjects import ObjectType
-from DWSIM.Thermodynamics import Streams, PropertyPackages
-from DWSIM.UnitOperations import UnitOperations
-from DWSIM.Automation import Automation3
-from DWSIM.GlobalSettings import Settings
-from System import Array
-
-
 def run_DWSIM(evaporator_temperature, condenser_temperature, adiabatic_efficiency, picture='none'):
+    global dwsimpath
+
+    clr.AddReference(dwsimpath + "CapeOpen.dll")
+    clr.AddReference(dwsimpath + "DWSIM.Automation.dll")
+    clr.AddReference(dwsimpath + "DWSIM.Interfaces.dll")
+    clr.AddReference(dwsimpath + "DWSIM.GlobalSettings.dll")
+    clr.AddReference(dwsimpath + "DWSIM.SharedClasses.dll")
+    clr.AddReference(dwsimpath + "DWSIM.Thermodynamics.dll")
+    clr.AddReference(dwsimpath + "DWSIM.UnitOperations.dll")
+    clr.AddReference(dwsimpath + "DWSIM.Inspector.dll")
+    clr.AddReference(dwsimpath + "System.Buffers.dll")
+    clr.AddReference(dwsimpath + "DWSIM.Thermodynamics.ThermoC.dll")
+
+    from DWSIM.Interfaces.Enums.GraphicObjects import ObjectType
+    from DWSIM.Thermodynamics import Streams, PropertyPackages
+    from DWSIM.UnitOperations import UnitOperations
+    from DWSIM.Automation import Automation3
+    from DWSIM.GlobalSettings import Settings
+    from System import Array
+
     diretorio_atual = os.getcwd()
     Directory.SetCurrentDirectory(diretorio_atual)
 

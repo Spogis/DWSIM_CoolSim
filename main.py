@@ -11,6 +11,7 @@ from apps.DataAnalytics import *
 from apps.odes import *
 from apps.run_DWSIM import *
 from apps.mlp_validation import *
+from apps.configuration import *
 
 from layouts.layout_DOE import *
 from layouts.layout_parallel_chart import *
@@ -24,11 +25,11 @@ from layouts.layout_mlp_evaluation import *
 from layouts.layout_solve_once import *
 from layouts.layout_validate import *
 from layouts.layout_upload_results import *
+from layouts.layout_configuration import *
 
 from keras_files.KerasMLP import *
 from keras_files.KerasPredict import *
 from keras_files.KerasMLP_OPT import *
-
 
 with open('assets/status.txt', 'w') as file:
     file.write(str(0.0))
@@ -129,12 +130,11 @@ app.layout = html.Div([
                                         'box-shadow': '0px 4px 8px rgba(0, 0, 0, 0.1)'}),
                 dcc.Tab(label='MLP Prediction', value='MLP_Evaluation',
                         style={'fontSize': '14px', 'width': '200px', 'padding': '10px', 'border': '1px solid #ccc',
-                               'border-radius': '5px', 'margin-bottom': '20px', 'background-color': '#f9f9f9'},
+                               'border-radius': '5px', 'margin-bottom': '5px', 'background-color': '#f9f9f9'},
                         selected_style={'fontSize': '14px', 'backgroundColor': '#007BFF', 'color': 'white',
                                         'width': '200px', 'padding': '10px', 'border': '1px solid #007BFF',
-                                        'border-radius': '5px', 'margin-bottom': '20px',
+                                        'border-radius': '5px', 'margin-bottom': '5px',
                                         'box-shadow': '0px 4px 8px rgba(0, 0, 0, 0.1)'}),
-
                 dcc.Tab(label='MLP Test', value='MLP_Validation',
                         style={'fontSize': '14px', 'width': '200px', 'padding': '10px', 'border': '1px solid #ccc',
                                'border-radius': '5px', 'margin-bottom': '20px', 'background-color': '#f9f9f9'},
@@ -144,6 +144,13 @@ app.layout = html.Div([
                                         'box-shadow': '0px 4px 8px rgba(0, 0, 0, 0.1)'}),
 
                 dcc.Tab(label='About', value='About',
+                        style={'fontSize': '14px', 'width': '200px', 'padding': '10px', 'border': '1px solid #ccc',
+                               'border-radius': '5px', 'margin-bottom': '5px', 'background-color': '#f9f9f9'},
+                        selected_style={'fontSize': '14px', 'backgroundColor': '#007BFF', 'color': 'white',
+                                        'width': '200px', 'padding': '10px', 'border': '1px solid #007BFF',
+                                        'border-radius': '5px', 'margin-bottom': '5px',
+                                        'box-shadow': '0px 4px 8px rgba(0, 0, 0, 0.1)'}),
+                dcc.Tab(label='Config.', value='Config',
                         style={'fontSize': '14px', 'width': '200px', 'padding': '10px', 'border': '1px solid #ccc',
                                'border-radius': '5px', 'margin-bottom': '5px', 'background-color': '#f9f9f9'},
                         selected_style={'fontSize': '14px', 'backgroundColor': '#007BFF', 'color': 'white',
@@ -165,6 +172,7 @@ app.layout = html.Div([
 @app.callback(Output('tabs-content', 'children'),
               [Input('tabs', 'value')])
 def update_tab_content(selected_tab):
+    global dwsimpath
     if selected_tab == 'DOE':
         return layout_DOE()
     elif selected_tab == 'Simulate_Once':
@@ -189,6 +197,9 @@ def update_tab_content(selected_tab):
         return layout_validate()
     elif selected_tab == 'About':
         return layout_about()
+    elif selected_tab == 'Config':
+        return layout_configuration(dwsimpath)
+
 
 
 @app.callback(Output('evaporator_temperature_value', 'value'),
@@ -890,6 +901,31 @@ def load_table(contents, filename):
         return data
     return dash.no_update
 
+
+#######################################################################################################################
+# Change Config
+#######################################################################################################################
+
+# Função para gravar o caminho no arquivo configuration.py
+def save_dwsim_path(dwsim_path):
+    # Use barras invertidas duplas para evitar problemas de escape
+    dwsim_path = dwsim_path.replace('\\', '\\\\')
+    config_content = f'dwsimpath = "{dwsim_path}"\n'
+    config_file_path = 'apps/configuration.py'
+
+    with open(config_file_path, 'w') as config_file:
+        config_file.write(config_content)
+
+@app.callback(
+    Output('dwsim-folder-input', 'value'),
+    [Input('dwsim-folder-input', 'value')]
+)
+def update_output(value):
+    if value:
+        # Salva o caminho no arquivo configuration.py
+        save_dwsim_path(value)
+        return value
+    return "Please enter the DWSIM installation folder."
 
 
 if __name__ == '__main__':
