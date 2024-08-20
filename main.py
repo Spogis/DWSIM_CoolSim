@@ -748,6 +748,85 @@ def save_uploaded_file(contents):
         ])
 
 
+#######################################################################################################################
+# Parallel Char Filters
+#######################################################################################################################
+@app.callback(
+    [Output('parallel-coordinates', 'figure', allow_duplicate=True),
+     Output('table_data_analysis_min_max', 'data', allow_duplicate=True),
+     Output('table_data_descriptive', 'data', allow_duplicate=True)],
+    [Input('table_data_analysis_min_max', 'data'),
+     Input('reset-button', 'n_clicks')],
+    [State('table_data_analysis_min_max', 'data')],
+    prevent_initial_call=True,
+)
+def update_content(data, reset_n_clicks, data_previous):
+    df1 = pd.read_excel('datasets/ODEs_Dataset.xlsx')
+    if reset_n_clicks > 0:
+        # Se o botão RESET foi clicado, usar os valores mínimos e máximos originais
+        constraints = {
+            var: (float(df1[var].min()), float(df1[var].max()))
+            for var in df1.columns
+        }
+        # Atualizar a tabela com os valores mínimos e máximos originais
+        min_max_data = create_min_max_table(df1).to_dict('records')
+        filtered_df = df1  # Sem filtros
+    else:
+        constraints = {}
+        filtered_df = df1.copy()
+        for row in data:
+            var = row['Variable']
+            try:
+                min_val = float(row['Min Value'])
+                max_val = float(row['Max Value'])
+            except ValueError:
+                continue  # Pula se a conversão falhar
+
+            constraints[var] = (min_val, max_val)
+            # Aplicar os filtros ao DataFrame
+            filtered_df = filtered_df[(filtered_df[var] >= min_val) & (filtered_df[var] <= max_val)]
+
+        min_max_data = data
+
+    fig = create_parallel_coordinates(df1, constraints)
+    descriptive_data = create_descriptive_table(filtered_df).to_dict('records')
+
+    exportfile = 'datasets/Parallel_Filter_Stats.xlsx'
+    descriptive_data_clean = create_descriptive_table(filtered_df)
+    descriptive_data_clean.to_excel(exportfile, index=False)
+
+    return fig, min_max_data, descriptive_data
+
+# Callback para atualizar a tabela com os valores mínimos e máximos originais
+@app.callback(
+    Output('table_data_analysis_min_max', 'data', allow_duplicate=True),
+    Output('reset-button', 'n_clicks', allow_duplicate=True),
+    [Input('reset-button', 'n_clicks')],
+    prevent_initial_call=True,
+)
+def reset_table(reset_n_clicks):
+    df1 = pd.read_excel('datasets/ODEs_Dataset.xlsx')
+    if reset_n_clicks > 0:
+        return create_min_max_table(df1).to_dict('records'), 0
+    return dash.no_update
+
+# Callback para salvar o arquivo Excel com os valores atuais da tabela
+@app.callback(
+    Output('save-button', 'n_clicks'),
+    [Input('save-button', 'n_clicks')],
+    [State('table_data_analysis_min_max', 'data')],
+    prevent_initial_call=True,
+)
+def save_to_excel(n_clicks, table_data):
+    if n_clicks > 0:
+        # Criar um DataFrame com os dados da tabela
+        df_to_save = pd.DataFrame(table_data)
+        # Salvar o DataFrame como um arquivo Excel
+        save_path = 'datasets/filters/filters.xlsx'
+        os.makedirs(os.path.dirname(save_path), exist_ok=True)  # Criar diretório se não existir
+        df_to_save.to_excel(save_path, index=False)
+    return dash.no_update
+
 @app.callback(
     Output("download-excel", "data"),
     Input("btn-stat-download", "n_clicks"),
@@ -759,16 +838,57 @@ def download_excel(n_clicks):
     return dcc.send_file(path_to_excel)
 
 
-@app.callback(Output('graph-parcoords', 'figure'),
-              Input('table_data_analysis_min_max', 'data'),
-              State('activefilters', 'data'))
-def update_figure(rows, stored_filters):
-    filters = {col: [float(rows[1][col]), float(rows[0][col])] for col in rows[0] if col in rows[1]}
-    df = pd.read_excel('datasets/ODEs_Dataset.xlsx')
-    if 'index' in df.columns:
-        df = df.drop(columns=['index'])
-    fig = update_graph_parcoords_min_max(df, filters)
-    return fig
+@app.callback(
+    [Output('table_data_analysis_min_max', 'data', allow_duplicate=True),
+     Output('table_data_descriptive', 'data', allow_duplicate=True)],
+    [Input('parallel-coordinates', 'restyleData')],
+    [State('parallel-coordinates', 'figure')],
+    prevent_initial_call=True,
+)
+def update_tables_based_on_graph_filter(restyle_data, current_figure):
+    if restyle_data is None:
+        raise dash.exceptions.PreventUpdate
+
+    df1 = pd.read_excel('datasets/ODEs_Dataset.xlsx')
+
+    # Extraindo os filtros aplicados no gráfico de coordenadas paralelas
+    constraints = {}
+    for dimension in current_figure['data'][0]['dimensions']:
+        if 'constraintrange' in dimension:
+            var = dimension['label']
+            min_val, max_val = dimension['constraintrange']
+            constraints[var] = (min_val, max_val)
+
+    # Aplicar os filtros ao DataFrame
+    filtered_df = df1.copy()
+    for var, (min_val, max_val) in constraints.items():
+        filtered_df = filtered_df[(filtered_df[var] >= min_val) & (filtered_df[var] <= max_val)]
+
+    # Atualizar a tabela com os novos valores mínimos e máximos após os filtros
+    min_max_data = create_min_max_table(filtered_df).to_dict('records')
+
+    # Atualizar a tabela de análise descritiva com os dados filtrados
+    descriptive_data = create_descriptive_table(filtered_df).to_dict('records')
+
+    exportfile = 'datasets/Parallel_Filter_Stats.xlsx'
+    descriptive_data_clean = create_descriptive_table(filtered_df)
+    descriptive_data_clean.to_excel(exportfile, index=False)
+
+    return min_max_data, descriptive_data
+
+
+@app.callback(Output('table_data_analysis_min_max', 'data', allow_duplicate=True),
+              Input('upload-filters', 'contents'),
+              State('upload-filters', 'filename'),
+              prevent_initial_call=True)
+def load_table(contents, filename):
+    if contents:
+        content_type, content_string = contents.split(',')
+        decoded = base64.b64decode(content_string)
+        min_max_data = pd.read_excel(io.BytesIO(decoded))
+        data = min_max_data.to_dict('records')
+        return data
+    return dash.no_update
 
 
 

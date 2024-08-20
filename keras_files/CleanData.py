@@ -27,7 +27,8 @@ def CleanDataset(df):
     df = df.dropna(axis=0)
 
     #Clean Using Parallel Chart Limits
-    data_describe = pd.read_excel('datasets/Parallel_Filter_Stats.xlsx', index_col=0)
+    data_describe = pd.read_excel('datasets/Parallel_Filter_Stats.xlsx', index_col=0).transpose()
+
     for names in column_names[0:]:
         for x in [names]:
             max = data_describe.loc['max', x]
