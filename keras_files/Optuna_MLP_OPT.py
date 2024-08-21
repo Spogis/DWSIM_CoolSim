@@ -24,6 +24,7 @@ def limpar_nome_arquivo(nome_arquivo):
         nome_arquivo = nome_arquivo.replace(char, '_')
     return nome_arquivo
 
+
 def limpar_KerasOutput(diretorio):
     for nome in os.listdir(diretorio):
         caminho = os.path.join(diretorio, nome)
@@ -53,6 +54,8 @@ def objective(trial, X_train, y_train, X_valid, y_valid):
     model.add(layers.Dense(y_train.shape[1], kernel_initializer=initializer))
 
     learning_rate = trial.suggest_float('learning_rate', 1e-5, 1e-1, log=True)
+    batch_size = trial.suggest_int('batch_size', 32, 512, step=32)
+
     model.compile(optimizer=keras.optimizers.Adam(learning_rate=learning_rate),
                   loss='mse',
                   metrics=['mae'])
@@ -66,7 +69,7 @@ def objective(trial, X_train, y_train, X_valid, y_valid):
 
     history = model.fit(X_train, y_train,
                         validation_data=(X_valid, y_valid),
-                        batch_size=512,
+                        batch_size=batch_size,
                         epochs=500,
                         callbacks=[stop_early],
                         verbose=0)
@@ -104,7 +107,14 @@ def RunOptimizedMLP(Dataset, Input_Columns, Output_Columns):
     y_train = scalerY.transform(y_train)
     y_valid = scalerY.transform(y_valid)
 
-    study = optuna.create_study(direction='minimize')
+    # Defina a seed para garantir reprodutibilidade
+    SEED = 42
+
+    study = optuna.create_study(
+        direction='minimize',
+        sampler=optuna.samplers.TPESampler(seed=SEED)
+    )
+
     n_trials = 50
     study.optimize(lambda trial: objective(trial, X_train, y_train, X_valid, y_valid), n_trials=n_trials)
 
@@ -139,7 +149,7 @@ def RunOptimizedMLP(Dataset, Input_Columns, Output_Columns):
 
     history = model.fit(X_train, y_train,
                         validation_data=(X_valid, y_valid),
-                        batch_size=512,
+                        batch_size=best_params['batch_size'],
                         epochs=2000,
                         callbacks=[stop_early],
                         verbose=1)
@@ -159,17 +169,21 @@ def RunOptimizedMLP(Dataset, Input_Columns, Output_Columns):
             os.remove(file_path)
 
     i = 0
-    for output in Output_Columns:
+    for i, output in enumerate(Output_Columns):
         output = limpar_nome_arquivo(output)
         figure_file = 'assets/images/' + str("%02d" % (i + 1)) + ' - ' + output + '.png'
+
+        # Inverter a transformação de padronização nos dados
+        y_valid_original = scalerY.inverse_transform(y_valid)[:, i]
+        y_pred_original = scalerY.inverse_transform(model.predict(X_valid))[:, i]
+
         plt.figure(1)
         plt.clf()
-        plt.scatter(y_valid[:, i], model.predict(X_valid)[:, i], s=6, label=output)
-        plt.plot(y_valid[:, i], y_valid[:, i])
+        plt.scatter(y_valid_original, y_pred_original, s=6, label=output)
+        plt.plot(y_valid_original, y_valid_original)
         plt.legend()
         plt.savefig(figure_file)
         plt.close()
-        i = i + 1
 
     history_df = pd.DataFrame(history.history)
 
@@ -187,9 +201,6 @@ def RunOptimizedMLP(Dataset, Input_Columns, Output_Columns):
     plt.savefig('assets/images/00 - LossEpoch.png')
     plt.close()
 
-    caminho_completo = os.path.join('kerasoutput', 'temp.txt')
-    with open(caminho_completo, 'w') as arquivo:
-        pass
 
     ypred_Scaled = model.predict(X_valid)
     ypred = scalerY.inverse_transform(ypred_Scaled)
@@ -213,5 +224,6 @@ def RunOptimizedMLP(Dataset, Input_Columns, Output_Columns):
     for i in range(best_params.get('num_layers')):
         best_hps_str += f" - Neurons in each layer {i + 1}: {best_params.get('units_' + str(i))}\n"
     best_hps_str += f" - Optimizer learning rate: {best_params.get('learning_rate')}\n"
+    best_hps_str += f" - Batch size: {best_params.get('batch_size')}\n"
 
     return best_hps_str, model_summary_str, r2_str
