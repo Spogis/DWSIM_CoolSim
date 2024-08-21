@@ -113,6 +113,17 @@ def layout_validate():
                 disabled=True,
                 style={'width': '80px', 'textAlign': 'center', 'fontWeight': 'bold'}
             ),
+
+            html.Div("Capacity MAPE:",
+                     style={'width': '150px', 'textAlign': 'center', 'paddingRight': '10px', 'fontWeight': 'bold'}),
+            dcc.Input(
+                id="Capacity_rscore",
+                type='text',
+                value="",
+                disabled=True,
+                style={'width': '80px', 'textAlign': 'center', 'fontWeight': 'bold'}
+            ),
+
         ], style={'display': 'flex', 'justifyContent': 'center', 'alignItems': 'center', 'gap': '20px'}),
 
         html.Br(),

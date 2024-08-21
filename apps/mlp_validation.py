@@ -11,7 +11,7 @@ from apps.run_DWSIM import *
 
 
 def MLP_Validation(ValidationCases):
-    data_describe = pd.read_excel('datasets/Parallel_Filter_Stats.xlsx', index_col=0)
+    data_describe = pd.read_excel('datasets/Parallel_Filter_Stats.xlsx', index_col=0).transpose()
 
     evaporator_temperature_random = np.random.uniform(data_describe.loc['min', 'Evaporator Temperature'],
                                                       data_describe.loc['max', 'Evaporator Temperature'],
@@ -25,18 +25,20 @@ def MLP_Validation(ValidationCases):
                                                     data_describe.loc['max', 'Adiabatic Efficiency'],
                                                     size=ValidationCases)
 
+    capacity_random = np.random.uniform(data_describe.loc['min', 'Capacity'],
+                                                    data_describe.loc['max', 'Capacity'],
+                                                    size=ValidationCases)
+
     df = pd.DataFrame({
         'Evaporator Temperature': evaporator_temperature_random,
         'Condenser Temperature': condenser_temperature_random,
-        'Adiabatic Efficiency': adiabatic_efficiency_random
+        'Adiabatic Efficiency': adiabatic_efficiency_random,
+        'Capacity': capacity_random
     })
 
     numberofsimulations = len(df)
 
     exportdataset = pd.DataFrame(columns=[
-        'Evaporator Temperature',
-        'Condenser Temperature',
-        'Adiabatic Efficiency',
         'Compressor Energy',
         'Electric Current',
         'Discharge Temperature',
@@ -62,27 +64,27 @@ def MLP_Validation(ValidationCases):
         evaporator_temperature_value = df.iloc[i]['Evaporator Temperature']
         condenser_temperature_value = df.iloc[i]['Condenser Temperature']
         adiabatic_efficiency_value = df.iloc[i]['Adiabatic Efficiency']
+        capacity_value = df.iloc[i]['Capacity']
 
         energy, discharge_temperature, mass_flow = run_DWSIM(evaporator_temperature=evaporator_temperature_value,
                                                              condenser_temperature=condenser_temperature_value,
-                                                             adiabatic_efficiency=adiabatic_efficiency_value)
+                                                             adiabatic_efficiency=adiabatic_efficiency_value,
+                                                             btuh=capacity_value)
 
         energy = energy * 1000
         discharge_temperature = discharge_temperature - 273.15
         mass_flow = mass_flow * 60
         electric_current = energy / 220
 
-        input_data = np.array([[evaporator_temperature_value, condenser_temperature_value, adiabatic_efficiency_value]])
+        input_data = np.array([[evaporator_temperature_value, condenser_temperature_value,
+                                adiabatic_efficiency_value, capacity_value]])
         X_valid = scalerX.transform(input_data)
         ypred_Scaled = model.predict(X_valid)
         ypred = scalerY.inverse_transform(ypred_Scaled)
 
         MLP_Compressor_Energy, MLP_Electric_Current, MLP_Discharge_Temperature, MLP_Refrigerant_Mass_Flow = ypred[0]
 
-        designdata = np.array([evaporator_temperature_value,
-                               condenser_temperature_value,
-                               adiabatic_efficiency_value,
-                               energy,
+        designdata = np.array([energy,
                                electric_current,
                                discharge_temperature,
                                mass_flow,
@@ -103,7 +105,7 @@ def MLP_Validation(ValidationCases):
 
 
 def Inverse_MLP_Validation(ValidationCases):
-    data_describe = pd.read_excel('datasets/Parallel_Filter_Stats.xlsx', index_col=0)
+    data_describe = pd.read_excel('datasets/Parallel_Filter_Stats.xlsx', index_col=0).transpose()
 
     evaporator_temperature_random = np.random.uniform(data_describe.loc['min', 'Evaporator Temperature'],
                                                       data_describe.loc['max', 'Evaporator Temperature'],
@@ -117,10 +119,15 @@ def Inverse_MLP_Validation(ValidationCases):
                                                     data_describe.loc['max', 'Adiabatic Efficiency'],
                                                     size=ValidationCases)
 
+    capacity_random = np.random.uniform(data_describe.loc['min', 'Capacity'],
+                                        data_describe.loc['max', 'Capacity'],
+                                        size=ValidationCases)
+
     df = pd.DataFrame({
         'Evaporator Temperature': evaporator_temperature_random,
         'Condenser Temperature': condenser_temperature_random,
-        'Adiabatic Efficiency': adiabatic_efficiency_random
+        'Adiabatic Efficiency': adiabatic_efficiency_random,
+        'Capacity': capacity_random
     })
 
     numberofsimulations = len(df)
@@ -129,9 +136,11 @@ def Inverse_MLP_Validation(ValidationCases):
         'Evaporator Temperature',
         'Condenser Temperature',
         'Adiabatic Efficiency',
+        'Capacity',
         'MLP_Evaporator_Temperature',
         'MLP_Condenser_Temperature',
         'MLP_Adiabatic_Efficiency',
+        'MLP_Capacity'
     ])
 
     # Carrega o modelo
@@ -149,10 +158,12 @@ def Inverse_MLP_Validation(ValidationCases):
         evaporator_temperature_value = df.iloc[i]['Evaporator Temperature']
         condenser_temperature_value = df.iloc[i]['Condenser Temperature']
         adiabatic_efficiency_value = df.iloc[i]['Adiabatic Efficiency']
+        capacity_value = df.iloc[i]['Capacity']
 
         energy, discharge_temperature, mass_flow = run_DWSIM(evaporator_temperature=evaporator_temperature_value,
                                                              condenser_temperature=condenser_temperature_value,
-                                                             adiabatic_efficiency=adiabatic_efficiency_value)
+                                                             adiabatic_efficiency=adiabatic_efficiency_value,
+                                                             btuh=capacity_value)
 
         energy = energy * 1000
         discharge_temperature = discharge_temperature - 273.15
@@ -164,14 +175,16 @@ def Inverse_MLP_Validation(ValidationCases):
         ypred_Scaled = model.predict(X_valid)
         ypred = scalerY.inverse_transform(ypred_Scaled)
 
-        MLP_Evaporator_Temperature, MLP_Condenser_Temperature, MLP_Adiabatic_Efficiency = ypred[0]
+        MLP_Evaporator_Temperature, MLP_Condenser_Temperature, MLP_Adiabatic_Efficiency, MLP_Capacity= ypred[0]
 
         designdata = np.array([evaporator_temperature_value,
                                condenser_temperature_value,
                                adiabatic_efficiency_value,
+                               capacity_value,
                                MLP_Evaporator_Temperature,
                                MLP_Condenser_Temperature,
-                               MLP_Adiabatic_Efficiency])
+                               MLP_Adiabatic_Efficiency,
+                               MLP_Capacity])
 
         exportdataset.loc[len(exportdataset)] = designdata
 

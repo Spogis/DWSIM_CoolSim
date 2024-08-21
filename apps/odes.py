@@ -25,17 +25,20 @@ def Simulate_DWSIM_DOE():
                                           'Compressor Energy',
                                           'Electric Current',
                                           'Discharge Temperature',
-                                          'Refrigerant Mass Flow'])
+                                          'Refrigerant Mass Flow',
+                                          'Capacity'])
 
     for i in range(numberofsimulations):
         inicio_i = time.time()
         evaporator_temperature_value = df.iloc[i]['Evaporator Temperature']
         condenser_temperature_value = df.iloc[i]['Condenser Temperature']
         adiabatic_efficiency_value = df.iloc[i]['Adiabatic Efficiency']
+        capacity_value = df.iloc[i]['Capacity']
 
         energy, discharge_temperature, mass_flow = run_DWSIM(evaporator_temperature=evaporator_temperature_value,
                                                              condenser_temperature=condenser_temperature_value,
-                                                             adiabatic_efficiency=adiabatic_efficiency_value)
+                                                             adiabatic_efficiency=adiabatic_efficiency_value,
+                                                             btuh=capacity_value)
 
         energy = energy * 1000
         discharge_temperature = discharge_temperature - 273.15
@@ -69,11 +72,12 @@ def Simulate_DWSIM_DOE():
                                energy,
                                electric_current,
                                discharge_temperature,
-                               mass_flow])
+                               mass_flow,
+                               capacity_value])
 
         exportdataset.loc[len(exportdataset)] = designdata
 
-        if i % int(numberofsimulations / 10) == 0:
+        if i % int(numberofsimulations / 20) == 0:
             status = round((i / numberofsimulations) * 100, 0)
             with open('assets/status.txt', 'w') as file:
                 file.write(str(status))

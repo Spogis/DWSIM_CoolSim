@@ -48,6 +48,13 @@ def layout_solve_once():
                     style={'width': '80px', 'textAlign': 'center', 'fontWeight': 'bold'}
                 ),
 
+
+            ], style={'display': 'flex', 'justifyContent': 'center', 'alignItems': 'center', 'gap': '20px'}),
+        ], style={'padding': '20px', 'margin': 'auto', 'width': '1200px', 'box-shadow': '0px 0px 10px #ccc',
+                  'border-radius': '15px'}),
+        html.Br(),
+        html.Div([
+            html.Div([
                 html.Div("Adiabatic Efficiency [%]:",
                          style={'width': '150px', 'textAlign': 'center', 'paddingRight': '10px', 'fontWeight': 'bold'}),
                 dcc.Input(
@@ -59,10 +66,20 @@ def layout_solve_once():
                     disabled=False,
                     style={'width': '80px', 'textAlign': 'center', 'fontWeight': 'bold'}
                 ),
+
+                html.Div("Capacity [BTU/h]:",
+                         style={'width': '150px', 'textAlign': 'center', 'paddingRight': '10px', 'fontWeight': 'bold'}),
+                dcc.Input(
+                    id="capacity_value",
+                    type='number',
+                    value=12000,
+                    min=9000,
+                    disabled=False,
+                    style={'width': '80px', 'textAlign': 'center', 'fontWeight': 'bold'}
+                ),
             ], style={'display': 'flex', 'justifyContent': 'center', 'alignItems': 'center', 'gap': '20px'}),
         ], style={'padding': '20px', 'margin': 'auto', 'width': '1200px', 'box-shadow': '0px 0px 10px #ccc',
                   'border-radius': '15px'}),
-
         html.Br(),
         html.Div([
             html.Div([

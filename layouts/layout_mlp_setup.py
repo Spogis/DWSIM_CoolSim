@@ -17,11 +17,11 @@ def initial_columns():
 
 def layout_mlp_setup(input_columns, output_columns, drop_options, MLP_Type):
     if MLP_Type == "Direct MLP":
-        input_columns = ['Evaporator Temperature', 'Condenser Temperature', 'Adiabatic Efficiency']
+        input_columns = ['Evaporator Temperature', 'Condenser Temperature', 'Adiabatic Efficiency', 'Capacity']
         output_columns = ['Compressor Energy', 'Electric Current', 'Discharge Temperature', 'Refrigerant Mass Flow']
     if MLP_Type == "Inverse MLP":
         input_columns = ['Compressor Energy', 'Electric Current', 'Discharge Temperature', 'Refrigerant Mass Flow']
-        output_columns = ['Evaporator Temperature', 'Condenser Temperature', 'Adiabatic Efficiency']
+        output_columns = ['Evaporator Temperature', 'Condenser Temperature', 'Adiabatic Efficiency', 'Capacity']
     
 
     layout = html.Div([

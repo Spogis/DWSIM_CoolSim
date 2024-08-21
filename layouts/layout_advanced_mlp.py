@@ -8,11 +8,21 @@ import dash_bootstrap_components as dbc
 def layout_advanced_mlp():
     layout = html.Div([
         html.Div([
-            html.Button('OPTIMIZE KERAS MLP!',
-                        id='run-OPTMLP-button',
-                        disabled=False,
-                        style={'width': '400px', 'backgroundColor': 'green', 'color': 'white',
-                               'fontWeight': 'bold', 'fontSize': '20px'}),
+            html.Button(
+                html.Img(src='/assets/optuna-logo.png', style={'height': '100%', 'width': '100%'}),
+                id='run-OPTMLP-button',
+                disabled=False,
+                style={
+                    'width': '182x',  # Ajuste a largura conforme necessário
+                    'height': '38px',  # Ajuste a altura conforme necessário
+                    'padding': '0',  # Remove o padding
+                    'border': 'none',  # Remove a borda
+                    'backgroundColor': 'transparent',  # Fundo transparente para não interferir na imagem
+                    'display': 'flex',
+                    'alignItems': 'center',
+                    'justifyContent': 'center'
+                }
+            ),
         ], style={'display': 'flex', 'flex-direction': 'column', 'alignItems': 'center', 'justifyContent': 'center',
                   'marginBottom': '10px'}),
         html.Br(),

@@ -10,7 +10,8 @@ from System import String, Environment
 
 from apps.print_flowsheet import *
 
-def run_DWSIM(evaporator_temperature, condenser_temperature, adiabatic_efficiency, picture='none'):
+
+def run_DWSIM(evaporator_temperature, condenser_temperature, adiabatic_efficiency, btuh=12000, picture='none'):
     global dwsimpath
 
     clr.AddReference(dwsimpath + "CapeOpen.dll")
@@ -39,6 +40,11 @@ def run_DWSIM(evaporator_temperature, condenser_temperature, adiabatic_efficienc
 
     FlowsheetFile = "DWSIM/DWSIM_FILE.dwxmz"
     myflowsheet = manager.LoadFlowsheet(FlowsheetFile)
+
+    # Change Controller / Adjust
+    obj = myflowsheet.GetFlowsheetSimulationObject('C-1')
+    controller = obj.GetAsObject()
+    controller.AdjustValue = btuh * 0.00029307107
 
     # Set Evaporator Temperature / Compressor Inlet Temperature
     obj = myflowsheet.GetFlowsheetSimulationObject('Entrada do Compressor')

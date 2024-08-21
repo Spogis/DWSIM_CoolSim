@@ -11,7 +11,6 @@ from apps.DataAnalytics import *
 from apps.odes import *
 from apps.run_DWSIM import *
 from apps.mlp_validation import *
-from apps.configuration import *
 
 from layouts.layout_DOE import *
 from layouts.layout_parallel_chart import *
@@ -29,13 +28,19 @@ from layouts.layout_configuration import *
 
 from keras_files.KerasMLP import *
 from keras_files.KerasPredict import *
-from keras_files.KerasMLP_OPT import *
+#from keras_files.KerasMLP_OPT import *  # KerasTuner
+from keras_files.Optuna_MLP_OPT import * # Optuna
 
 with open('assets/status.txt', 'w') as file:
     file.write(str(0.0))
 
+# Abrir o arquivo configuration.txt em modo de leitura
+with open('apps/configuration.txt', 'r') as file:
+    # Ler o conteúdo do arquivo e remover espaços em branco nas extremidades
+    dwsimpath = file.read().strip()
+
 MLP_Type = "Direct MLP"
-input_columns = ['Evaporator Temperature', 'Condenser Temperature', 'Adiabatic Efficiency']
+input_columns = ['Evaporator Temperature', 'Condenser Temperature', 'Adiabatic Efficiency', 'Capacity']
 output_columns = ['Compressor Energy', 'Electric Current', 'Discharge Temperature', 'Refrigerant Mass Flow']
 drop_options = initial_columns()
 
@@ -483,15 +488,17 @@ def OPTMLP(n_clicks):
               State('external_temperature_value', 'value'),
               State('approach_temperature_value', 'value'),
               State('adiabatic_efficiency_value', 'value'),
+              State('capacity_value', 'value'),
               prevent_initial_call=True)
 def simulate(n_clicks, desired_temperature_value, external_temperature_value, approach_temperature_value,
-             adiabatic_efficiency_value):
+             adiabatic_efficiency_value, capacity_value):
     if n_clicks > 0:
         evaporator_temperature_value = desired_temperature_value - approach_temperature_value
         condenser_temperature_value = external_temperature_value + approach_temperature_value
         energy, discharge_temperature, mass_flow = run_DWSIM(evaporator_temperature=evaporator_temperature_value,
                                                              condenser_temperature=condenser_temperature_value,
                                                              adiabatic_efficiency=adiabatic_efficiency_value,
+                                                             btuh=capacity_value,
                                                              picture='Yes')
 
         energy = energy * 1000
@@ -575,14 +582,15 @@ def simulate(n_clicks, desired_temperature_value, external_temperature_value, ap
                Output('Refrigerant_Mass_Flow_rscore', 'value'),
                Output('Evaporator_Temperature_rscore', 'value'),
                Output('Condenser_Temperature_rscore', 'value'),
-               Output('Adiabatic_Efficiency_rscore', 'value')],
+               Output('Adiabatic_Efficiency_rscore', 'value'),
+               Output('Capacity_rscore', 'value')],
               Input('validation-btn', 'n_clicks'),
               State('Validation_Cases', 'value'),
               prevent_initial_call=True)
 def simulate(n_clicks, ValidationCases):
     print(input_columns)
 
-    if input_columns == ['Evaporator Temperature', 'Condenser Temperature', 'Adiabatic Efficiency']:
+    if input_columns == ['Evaporator Temperature', 'Condenser Temperature', 'Adiabatic Efficiency', 'Capacity']:
         MLP_Validation(ValidationCases)
         # Calculate R2 Scores
         df = pd.read_excel('datasets/MLP_Validation_Dataset.xlsx')
@@ -607,7 +615,7 @@ def simulate(n_clicks, ValidationCases):
             file.write(str(100))
 
         return ("MLP Test Finished!", 100, 100, "", energy_formatado, electric_current_formatado,
-                discharge_temperature_formatado, mass_flow_formatado, "N/A", "N/A", "N/A")
+                discharge_temperature_formatado, mass_flow_formatado, "N/A", "N/A", "N/A", "N/A")
 
     if input_columns == ['Compressor Energy', 'Electric Current', 'Discharge Temperature', 'Refrigerant Mass Flow']:
         Inverse_MLP_Validation(ValidationCases)
@@ -626,11 +634,16 @@ def simulate(n_clicks, ValidationCases):
                                                                  df['Adiabatic Efficiency'])*100
         Adiabatic_Efficiency_formatado = f"{Adiabatic_Efficiency_r2:.2f}%"
 
+        capacity_r2 = mean_absolute_percentage_error(df['MLP_Capacity'],
+                                                     df['Capacity']) * 100
+        capacity_formatado = f"{capacity_r2:.2f}%"
+
         with open('assets/status2.txt', 'w') as file:
             file.write(str(100))
 
         return ("MLP Test Finished!", 100, 100, "", "N/A", "N/A", "N/A", "N/A",
-                Evaporator_Temperature_formatado, Condenser_Temperature_formatado, Adiabatic_Efficiency_formatado)
+                Evaporator_Temperature_formatado, Condenser_Temperature_formatado,
+                Adiabatic_Efficiency_formatado, capacity_formatado)
 
 
 @app.callback(
@@ -660,13 +673,13 @@ def change_MLP_setup(MLP_setup_selector):
 
     if MLP_setup_selector == "Direct MLP":
         MLP_Type = "Direct MLP"
-        input_columns = ['Evaporator Temperature', 'Condenser Temperature', 'Adiabatic Efficiency']
+        input_columns = ['Evaporator Temperature', 'Condenser Temperature', 'Adiabatic Efficiency', 'Capacity']
         output_columns = ['Compressor Energy', 'Electric Current', 'Discharge Temperature', 'Refrigerant Mass Flow']
         return input_columns, output_columns
     elif MLP_setup_selector == "Inverse MLP":
         MLP_Type = "Inverse MLP"
         input_columns = ['Compressor Energy', 'Electric Current', 'Discharge Temperature', 'Refrigerant Mass Flow']
-        output_columns = ['Evaporator Temperature', 'Condenser Temperature', 'Adiabatic Efficiency']
+        output_columns = ['Evaporator Temperature', 'Condenser Temperature', 'Adiabatic Efficiency', 'Capacity']
         return input_columns, output_columns
     else:
         MLP_Type = "Custom MLP"
@@ -906,12 +919,12 @@ def load_table(contents, filename):
 # Change Config
 #######################################################################################################################
 
-# Função para gravar o caminho no arquivo configuration.py
+# Função para gravar o caminho no arquivo configuration.txt
 def save_dwsim_path(dwsim_path):
     # Use barras invertidas duplas para evitar problemas de escape
     dwsim_path = dwsim_path.replace('\\', '\\\\')
-    config_content = f'dwsimpath = "{dwsim_path}"\n'
-    config_file_path = 'apps/configuration.py'
+    config_content = dwsim_path
+    config_file_path = 'apps/configuration.txt'
 
     with open(config_file_path, 'w') as config_file:
         config_file.write(config_content)
@@ -922,7 +935,6 @@ def save_dwsim_path(dwsim_path):
 )
 def update_output(value):
     if value:
-        # Salva o caminho no arquivo configuration.py
         save_dwsim_path(value)
         return value
     return "Please enter the DWSIM installation folder."
