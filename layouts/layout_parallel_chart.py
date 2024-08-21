@@ -47,6 +47,10 @@ def parallel_chart():
     if 'index' in df.columns:
         df = df.drop(columns=['index'])
 
+    desc_df = create_descriptive_table(df)
+    exportfile = 'datasets/Parallel_Filter_Stats.xlsx'
+    desc_df.to_excel(exportfile, index=False)
+
     initial_figure = create_parallel_coordinates(df, initialconstraints(df))
 
     layout = html.Div([
