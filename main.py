@@ -28,8 +28,7 @@ from layouts.layout_configuration import *
 
 from keras_files.KerasMLP import *
 from keras_files.KerasPredict import *
-#from keras_files.KerasMLP_OPT import *  # KerasTuner
-from keras_files.Optuna_MLP_OPT import * # Optuna
+from keras_files.Optuna_MLP_OPT import *
 
 with open('assets/status.txt', 'w') as file:
     file.write(str(0.0))
