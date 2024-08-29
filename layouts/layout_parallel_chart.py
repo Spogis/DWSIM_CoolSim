@@ -125,3 +125,4 @@ def parallel_chart():
 
     return layout
 
+
