@@ -7,7 +7,7 @@ pandas>=2.2.0
 pyarrow>=15.0.0
 numpy>=1.26.3
 matplotlib>=3.8.2
-plotly>=5.18.0
+plotly>=5.23.0
 pillow>=10.2.0
 
 #Excel, DOC and PDF Reader / Writer
