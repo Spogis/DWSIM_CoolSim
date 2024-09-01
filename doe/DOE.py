@@ -47,30 +47,26 @@ def UpdateNaNValues(filename):
 
 
 def transforma_coluna(df, nome_coluna, val_min, val_max, num_segmentos):
-    # Calcula os quantis para dividir a distribuição em segmentos
-    quantis = np.linspace(0, 1, num_segmentos + 2)
+    # Calcula os quantis reais da coluna para divisão uniforme
+    quantis_reais = df[nome_coluna].quantile(np.linspace(0, 1, num_segmentos + 1))
 
-    # Calcula os pontos de divisão usando a CDF inversa
-    pontos_divisao = norm.ppf(quantis)
+    # Define os intervalos discretos uniformemente entre val_min e val_max
+    intervalos_discretos = np.linspace(val_min, val_max, num_segmentos + 1)
 
-    # Calcula os intervalos de mapeamento real com base em val_min e val_max
-    intervalos_real = np.linspace(val_min, val_max, num_segmentos + 1)
-
-    # Função para mapear os valores para os intervalos reais
-    def mapeia_para_real(valor):
-        for i, ponto in enumerate(pontos_divisao[:-1]):
-            if valor <= pontos_divisao[i + 1]:
-                return intervalos_real[i]
-        return intervalos_real[-1]
+    # Função para mapear os valores para os intervalos discretos
+    def mapeia_para_discreto(valor):
+        for i in range(num_segmentos):
+            if quantis_reais.iloc[i] <= valor < quantis_reais.iloc[i + 1]:
+                return intervalos_discretos[i]
+        return intervalos_discretos[-1]
 
     # Aplica a função de mapeamento à coluna especificada
-    df[nome_coluna] = df[nome_coluna].apply(mapeia_para_real)
+    df[nome_coluna] = df[nome_coluna].apply(mapeia_para_discreto)
 
     return df
 
 def LatinHypercube(NumberOfSimulations):
     df = pd.read_excel('doe/NewInputVariables.xlsx')
-    #df = df.loc[df['Variable Type'] != 'Discrete']
 
     InputVariables = df['Variable Name']
     Variable_Mean = df['Mean']
@@ -93,7 +89,7 @@ def LatinHypercube(NumberOfSimulations):
             design[:, i] = norm(loc=Variable_Mean[i], scale=Variable_Standard_deviation[i]).ppf(design[:, i])
             scaler = MinMaxScaler(feature_range=(Variable_Min[i], Variable_Max[i]))
             array_2d = design[:, i].reshape(-1, 1)
-            values = scaler.fit_transform(array_2d )
+            values = scaler.fit_transform(array_2d)
             design[:, i] = values.flatten()
 
     # Criar o DataFrame
